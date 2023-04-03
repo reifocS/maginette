@@ -43,8 +43,10 @@ function CardSwap({ card }: PropsCard) {
   return (
     <img
       onClick={() => setSwap((prev) => !prev)}
-      src={src.image_uris.small}
+      loading="eager"
+      src={src.image_uris.normal}
       alt={src.name}
+      className="w-[180px] h-250px]"
     ></img>
   );
 }
@@ -53,7 +55,14 @@ function Card({ card }: PropsCard) {
   if (card.card_faces) {
     return <CardSwap card={card} />;
   }
-  return <img src={card.image_uris?.small} alt={card.name}></img>;
+  return (
+    <img
+      loading="eager"
+      className="w-[180px] h-250px]"
+      src={card.image_uris?.normal}
+      alt={card.name}
+    ></img>
+  );
 }
 
 export default function Home() {
