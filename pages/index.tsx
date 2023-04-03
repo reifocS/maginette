@@ -1,11 +1,73 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import { useState } from "react";
+import useCards from "@/hooks/useCards";
+import { Datum } from "@/types";
+import { cpSync } from "fs";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
+
+function processRawText(fromArena: string) {
+  if (fromArena.trim() === "") return [];
+  return new Set(
+    fromArena
+      .split("\n")
+      .map((s) => s.replace(/^[0-9]+/g, "").trim())
+      .filter((s) => s !== "")
+  );
+}
+
+type PropsCard = {
+  card: Datum;
+};
+type PropsCards = {
+  cards: Datum[];
+};
+function Cards({ cards }: PropsCards) {
+  return (
+    <ul className="flex gap-3 flex-wrap">
+      {cards.map((v) => (
+        <li key={v.id}>
+          <Card card={v} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CardSwap({ card }: PropsCard) {
+  const [swap, setSwap] = useState(false);
+  const index = swap ? 1 : 0;
+  const src = card.card_faces![index];
+  return (
+    <img
+      onClick={() => setSwap((prev) => !prev)}
+      src={src.image_uris.small}
+      alt={src.name}
+    ></img>
+  );
+}
+
+function Card({ card }: PropsCard) {
+  if (card.card_faces) {
+    return <CardSwap card={card} />;
+  }
+  return <img src={card.image_uris?.small} alt={card.name}></img>;
+}
 
 export default function Home() {
+  const [copyFromArena, setCopyFromArena] = useState("");
+  const cards = useCards(Array.from(processRawText(copyFromArena)));
+  const allParts =
+    cards.data?.data
+      .filter((v) => v.all_parts && v.all_parts.length > 0)
+      .flatMap((v) => v.all_parts) ?? [];
+
+  const related = useCards(Array.from(new Set(allParts.map((v) => v.name))));
+  const cardsInDeck = new Map();
+
+  console.log(allParts);
   return (
     <>
       <Head>
@@ -14,110 +76,24 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const target = e.target as typeof e.target & {
+            cards: { value: string };
+          };
+          setCopyFromArena(target.cards.value);
+        }}
+        className="flex flex-col grow-0 items-center content-center"
+      >
+        <label htmlFor="cards">Paste deck here</label>
+        <textarea name="cards" id="cards" cols={30} rows={10}></textarea>
+        <button>Submit</button>
+      </form>
+      <p className="text-xl font-extrabold">Deck</p>
+      {cards.data && <Cards cards={cards.data.data} />}
+      <p className="text-xl font-extrabold">Tokens</p>
+      {related.data && <Cards cards={related.data.data} />}
     </>
-  )
+  );
 }
