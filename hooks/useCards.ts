@@ -1,5 +1,7 @@
-import { CardCollection } from "@/types";
+import { CardCollection, Datum } from "@/types";
+import { shuffle } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 const getCards = async (names: string[]) => {
     const response = await fetch("https://api.scryfall.com/cards/collection", {
@@ -21,13 +23,19 @@ const getCards = async (names: string[]) => {
 
 function useCards(names: string[]) {
     // Queries
-    return useQuery<CardCollection, Error>({
+    return useQuery<CardCollection, Error, Datum[]>({
         queryKey: ["decks", names],
         queryFn: () => getCards(names),
         onError: (err) => {
             console.error(err.message);
         },
-        enabled: names.length > 0
+        staleTime: Number.POSITIVE_INFINITY,
+        enabled: names.length > 0,
+        refetchOnWindowFocus: false,
+        select: useCallback((data: CardCollection) => {
+            const cards = data.data;
+            return shuffle(cards);
+        }, [])
     });
 }
 
