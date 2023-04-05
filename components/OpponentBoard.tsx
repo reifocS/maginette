@@ -14,27 +14,25 @@ type Props = {
 };
 
 export default function OpponentBoard({ player }: Props) {
-  console.log({ player });
   return (
     <div>
-      <p>hand</p>
+      <p className="text-xl font-extrabold">hand</p>
       <div className="overflow-auto flex">
         {player?.hand?.map((c) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={c.id}
             alt="hidden card"
-            className="w-[180px] h-250px]"
+            className="w-[100px] h-170px]"
             src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg"
           ></img>
         ))}
       </div>
-
-      <p>battlefield</p>
+      <p className="text-xl font-extrabold">exile</p>
       <Cards
-        cards={player?.battlefield ?? []}
+        cards={player?.exile ?? []}
         show={true}
-        field={"battlefield"}
+        field={"graveyard"}
         engaged={player?.engaged ? [...player.engaged] : []}
         engageCard={function (cardId: string, e: boolean): void {
           throw new Error("Should never happen.");
@@ -49,7 +47,7 @@ export default function OpponentBoard({ player }: Props) {
         }}
         isOpponent={true}
       />
-      <p>graveyard</p>
+      <p className="text-xl font-extrabold">graveyard</p>
       <Cards
         cards={player?.graveyard ?? []}
         show={true}
@@ -68,11 +66,12 @@ export default function OpponentBoard({ player }: Props) {
         }}
         isOpponent={true}
       />
-      <p>exile</p>
+
+      <p className="text-xl font-extrabold">battlefield</p>
       <Cards
-        cards={player?.exile ?? []}
+        cards={player?.battlefield ?? []}
         show={true}
-        field={"graveyard"}
+        field={"battlefield"}
         engaged={player?.engaged ? [...player.engaged] : []}
         engageCard={function (cardId: string, e: boolean): void {
           throw new Error("Should never happen.");

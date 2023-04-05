@@ -103,6 +103,14 @@ const CustomContextMenu = ({
         <li className={className} onClick={onSwapped}>
           Swap face
         </li>
+        <li
+          className={className}
+          onClick={() => {
+            window.open(card.image_uris.normal);
+          }}
+        >
+          Show card in another window
+        </li>
       </ul>
     </div>
   );

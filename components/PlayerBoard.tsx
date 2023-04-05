@@ -29,19 +29,6 @@ export default function PlayerBoard({
 }: PlayerBoardProps) {
   return (
     <>
-      <div onClick={draw}>
-        {deck[0] && (
-          <Card
-            card={deck[0]}
-            field={"deck"}
-            show={false}
-            engaged={engaged}
-            isOpponent={false}
-            engageCard={engageCard}
-            sendCardTo={sendCardTo}
-          />
-        )}
-      </div>
       <p className="text-xl font-extrabold">Battlefield</p>
       <Cards
         cards={battlefield}
@@ -61,32 +48,47 @@ export default function PlayerBoard({
         engageCard={engageCard}
       />
       <p className="text-xl font-extrabold">Graveyard</p>
-      <Cards
-        cards={graveyard}
-        show={true}
-        field="graveyard"
-        engaged={engaged}
-        engageCard={engageCard}
-        sendCardTo={sendCardTo}
-      />
+
+      <summary>
+        <details>
+          <Cards
+            cards={graveyard}
+            show={true}
+            field="graveyard"
+            engaged={engaged}
+            engageCard={engageCard}
+            sendCardTo={sendCardTo}
+          />
+        </details>
+      </summary>
+
       <p className="text-xl font-extrabold">Exile</p>
-      <Cards
-        cards={exile}
-        show={true}
-        field="exile"
-        sendCardTo={sendCardTo}
-        engaged={engaged}
-        engageCard={engageCard}
-      />
+      <summary>
+        <details>
+          <Cards
+            cards={exile}
+            show={true}
+            field="exile"
+            sendCardTo={sendCardTo}
+            engaged={engaged}
+            engageCard={engageCard}
+          />
+        </details>
+      </summary>
+
       <p className="text-xl font-extrabold">Tokens</p>
-      <Cards
-        cards={tokens}
-        show={true}
-        engaged={engaged}
-        engageCard={engageCard}
-        field="tokens"
-        sendCardTo={sendCardTo}
-      />
+      <summary>
+        <details>
+          <Cards
+            cards={tokens}
+            show={true}
+            engaged={engaged}
+            engageCard={engageCard}
+            field="tokens"
+            sendCardTo={sendCardTo}
+          />
+        </details>
+      </summary>
     </>
   );
 }

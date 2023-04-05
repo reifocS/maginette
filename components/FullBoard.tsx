@@ -291,8 +291,11 @@ export default function FullBoard({ player }: Props) {
         onShuffle={onShuffle}
         onReset={onReset}
       />
-      <PanelGroup direction="horizontal">
-        <Panel defaultSize={50}>
+      <div className="flex flex-col gap-4">
+        <div className="border-b-4">
+          <OpponentBoard player={otherPlayer} />
+        </div>
+        <div>
           <PlayerBoard
             hand={hand}
             deck={deck}
@@ -305,12 +308,8 @@ export default function FullBoard({ player }: Props) {
             tokens={related.data ?? []}
             sendCardTo={sendCardTo}
           />
-        </Panel>
-        <ResizeHandle />
-        <Panel minSize={20}>
-          <OpponentBoard player={otherPlayer} />
-        </Panel>
-      </PanelGroup>
+        </div>
+      </div>
     </>
   );
 }

@@ -15,7 +15,7 @@ type PropsCard = {
 };
 
 let zIndex = 1;
-
+const gridSize = 30;
 export default function Card({
   card,
   show = true,
@@ -39,7 +39,9 @@ export default function Card({
       z.current = zIndex++;
     },
     onDrag: ({ offset: [x, y] }) => {
-      setPosition({ x, y });
+        const newX = Math.round(x / gridSize) * gridSize;
+        const newY = Math.round(y / gridSize) * gridSize;
+      setPosition({ x: newX, y: newY });
     },
     onContextMenu: ({ event }) => {
       if (!show || isOpponent) return;
