@@ -29,43 +29,53 @@ export default function OpponentBoard({ player }: Props) {
         ))}
       </div>
       <p className="text-xl font-extrabold">exile</p>
-      <Cards
-        cards={player?.exile ?? []}
-        show={true}
-        field={"graveyard"}
-        engaged={player?.engaged ? [...player.engaged] : []}
-        engageCard={function (cardId: string, e: boolean): void {
-          throw new Error("Should never happen.");
-        }}
-        sendCardTo={function (
-          from: Fields,
-          to: Fields,
-          card: Datum,
-          payload?: any
-        ): void {
-          throw new Error("Should never happen.");
-        }}
-        isOpponent={true}
-      />
+
+      <summary>
+        <details>
+          <Cards
+            cards={player?.exile ?? []}
+            show={true}
+            field={"graveyard"}
+            engaged={player?.engaged ? [...player.engaged] : []}
+            engageCard={function (cardId: string, e: boolean): void {
+              throw new Error("Should never happen.");
+            }}
+            sendCardTo={function (
+              from: Fields,
+              to: Fields,
+              card: Datum,
+              payload?: any
+            ): void {
+              throw new Error("Should never happen.");
+            }}
+            isOpponent={true}
+          />
+        </details>
+      </summary>
       <p className="text-xl font-extrabold">graveyard</p>
-      <Cards
-        cards={player?.graveyard ?? []}
-        show={true}
-        field={"graveyard"}
-        engaged={player?.engaged ? [...player.engaged] : []}
-        engageCard={function (cardId: string, e: boolean): void {
-          throw new Error("Should never happen.");
-        }}
-        sendCardTo={function (
-          from: Fields,
-          to: Fields,
-          card: Datum,
-          payload?: any
-        ): void {
-          throw new Error("Should never happen.");
-        }}
-        isOpponent={true}
-      />
+
+      <summary>
+        <details>
+          <Cards
+            cards={player?.graveyard ?? []}
+            show={true}
+            field={"graveyard"}
+            engaged={player?.engaged ? [...player.engaged] : []}
+            engageCard={function (cardId: string, e: boolean): void {
+              throw new Error("Should never happen.");
+            }}
+            sendCardTo={function (
+              from: Fields,
+              to: Fields,
+              card: Datum,
+              payload?: any
+            ): void {
+              throw new Error("Should never happen.");
+            }}
+            isOpponent={true}
+          />
+        </details>
+      </summary>
 
       <p className="text-xl font-extrabold">battlefield</p>
       <Cards

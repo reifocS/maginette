@@ -234,6 +234,7 @@ export default function FullBoard({ player }: Props) {
   return (
     <>
       room id: {room}
+      <h1 className="font-extrabold text-center">Opponent</h1>
       {deckFromText.trim() === "" && (
         <form
           className={`${"flex flex-col grow-0 items-center content-center"}`}
@@ -285,18 +286,18 @@ export default function FullBoard({ player }: Props) {
           className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
         ></div>
       )}
-      <Controls
-        deck={deck}
-        draw={draw}
-        onShuffle={onShuffle}
-        onReset={onReset}
-        desengageAll={() => setEngaged([])}
-      />
       <div className="flex flex-col gap-4">
         <div className="border-b-4">
           <OpponentBoard player={otherPlayer} />
         </div>
         <div>
+          <Controls
+            deck={deck}
+            draw={draw}
+            onShuffle={onShuffle}
+            onReset={onReset}
+            desengageAll={() => setEngaged([])}
+          />
           <PlayerBoard
             hand={hand}
             deck={deck}
