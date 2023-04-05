@@ -17,7 +17,7 @@ type Props = {
 export default function OpponentBoard({ player }: Props) {
   console.log({ player });
 
-  const tokens = Object.fromEntries(player?.tokens?.entries() ?? ({} as any));
+  const tokens = Object.fromEntries(player?.tokens?.entries() ?? []);
   return (
     <div>
       <p className="text-xl font-extrabold">hand</p>
