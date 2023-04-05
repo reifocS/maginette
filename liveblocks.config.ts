@@ -1,9 +1,9 @@
-import { LiveList, LiveObject, createClient } from "@liveblocks/client";
+import { LiveList, LiveMap, LiveObject, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
 
 type Presence = {
-    cursor: { x: number, y: number } | null,
+    lastPlayedCard: number | null,
     // ...
 };
 
@@ -25,6 +25,8 @@ type GameData = LiveObject<{
     hand: LiveList<LiveCard>;
     battlefield: LiveList<LiveCard>;
     engaged: LiveList<string>;
+    tokens: LiveMap<string, [number, number]>;
+    life: number;
 }>
 
 type Storage = {
@@ -38,5 +40,5 @@ const client = createClient({
 
 
 export const {
-    suspense: { RoomProvider, useStorage, useMutation },
+    suspense: { RoomProvider, useStorage, useMutation, useUndo, useCanRedo, useCanUndo, useRedo },
 } = createRoomContext<Presence, Storage>(client);

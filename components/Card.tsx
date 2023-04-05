@@ -2,7 +2,6 @@ import { Datum, Fields, OpponentCard, Point } from "@/types";
 import { useGesture } from "@use-gesture/react";
 import { useState, useRef } from "react";
 import CustomContextMenu from "./ContextMenu";
-import { LiveObject } from "@liveblocks/client";
 
 type PropsCard = {
   card: Datum | OpponentCard;
@@ -12,6 +11,10 @@ type PropsCard = {
   isOpponent: boolean;
   engageCard: (cardId: string, e: boolean) => void;
   sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any): void;
+  addToken: (cardId: string, [power, thougness]: [number, number]) => void;
+  tokensMap: {
+    [k: string]: [number, number];
+  };
 };
 
 let zIndex = 1;
@@ -23,7 +26,9 @@ export default function Card({
   engaged,
   field,
   isOpponent,
+  addToken,
   sendCardTo,
+  tokensMap,
 }: PropsCard) {
   const [swap, setSwap] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -33,14 +38,16 @@ export default function Card({
   );
   const isEngaged = engaged.find((c) => c === card.id);
 
+  const hasToken = tokensMap[card.id] !== undefined;
+
   const index = swap ? 1 : 0;
   const bind = useGesture({
     onDragStart: () => {
       z.current = zIndex++;
     },
     onDrag: ({ offset: [x, y] }) => {
-        const newX = Math.round(x / gridSize) * gridSize;
-        const newY = Math.round(y / gridSize) * gridSize;
+      const newX = Math.round(x / gridSize) * gridSize;
+      const newY = Math.round(y / gridSize) * gridSize;
       setPosition({ x: newX, y: newY });
     },
     onContextMenu: ({ event }) => {
@@ -94,6 +101,11 @@ export default function Card({
           src={src.image_uris?.normal}
           alt={src.name}
         ></img>
+        {hasToken && (
+          <div className="absolute top-8 right-4 bg-black rounded-full p-2 z-[99999]">{`${tokensMap[card.id][0]}/${
+            tokensMap[card.id][1]
+          }`}</div>
+        )}
       </div>
       {!isOpponent && contextMenuPosition && (
         <CustomContextMenu
@@ -109,6 +121,7 @@ export default function Card({
           onClose={handleContextMenuClose}
           sendCardTo={sendCardTo}
           card={card as Datum}
+          addToken={addToken}
         />
       )}
     </>

@@ -9,6 +9,10 @@ type PropsCards = {
   engageCard: (cardId: string, e: boolean) => void;
   sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any): void;
   isOpponent?: boolean;
+  addToken: (cardId: string, [power, thougness]: [number, number]) => void;
+  tokensMap: {
+    [k: string]: [number, number];
+  };
 };
 export default function Cards({
   cards,
@@ -18,6 +22,8 @@ export default function Cards({
   engageCard,
   engaged,
   isOpponent = false,
+  addToken,
+  tokensMap
 }: PropsCards) {
   return (
     <ul className="flex gap-3 flex-wrap">
@@ -31,6 +37,8 @@ export default function Cards({
             sendCardTo={sendCardTo}
             engaged={engaged}
             engageCard={engageCard}
+            addToken={addToken}
+            tokensMap={tokensMap}
           />
         </li>
       ))}

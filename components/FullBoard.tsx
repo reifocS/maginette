@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";
 import { useStorage, useMutation } from "@/liveblocks.config";
-import { LiveObject, LiveList } from "@liveblocks/client";
+import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -67,7 +67,9 @@ function dataToLiveObject(
   engaged: string[],
   battlefield: Datum[],
   data?: Datum[],
-  related?: Datum[]
+  related?: Datum[],
+  life?: number,
+  tokens?: [string, [number, number]][]
 ) {
   return new LiveObject({
     deck: dataToLiveList(data),
@@ -77,6 +79,8 @@ function dataToLiveObject(
     exile: dataToLiveList(exile),
     engaged: new LiveList(engaged),
     battlefield: dataToLiveList(battlefield),
+    life: life!,
+    tokens: new LiveMap(tokens),
   });
 }
 
@@ -111,6 +115,9 @@ export default function FullBoard({ player }: Props) {
   const [graveyard, setGraveyard] = useState<Datum[]>([]);
   const [battlefield, setBattlefield] = useState<Datum[]>([]);
   const [engaged, setEngaged] = useState<string[]>([]);
+  const [tokens, setTokens] = useState<[string, [number, number]][]>([]);
+
+  const tokensMap = Object.fromEntries(tokens);
 
   const [exile, setExile] = useState<Datum[]>([]);
   const syncWithLiveData = useMutation(
@@ -125,7 +132,9 @@ export default function FullBoard({ player }: Props) {
             engaged,
             battlefield,
             deck,
-            related.data
+            related.data,
+            storage.get("playerOne")?.get("life"),
+            tokens
           )
         );
       } else {
@@ -138,12 +147,24 @@ export default function FullBoard({ player }: Props) {
             engaged,
             battlefield,
             deck,
-            related.data
+            related.data,
+            storage.get("playerTwo")?.get("life"),
+            tokens
           )
         );
       }
     },
-    [deck, hand, graveyard, battlefield, engaged, player, exile, related.data] // Works just like it would in useCallback
+    [
+      deck,
+      hand,
+      graveyard,
+      battlefield,
+      engaged,
+      player,
+      exile,
+      related.data, //tokens card
+      tokens, // +x/+x
+    ] // Works just like it would in useCallback
   );
 
   useEffect(() => {
@@ -215,6 +236,11 @@ export default function FullBoard({ player }: Props) {
 
   function onReset() {
     queryClient.resetQueries();
+  }
+
+  function addToken(cardId: string, values: [number, number]) {
+    tokensMap[cardId] = values;
+    setTokens(Object.entries(tokensMap));
   }
 
   function engageCard(cardId: string, engage: boolean) {
@@ -300,13 +326,13 @@ export default function FullBoard({ player }: Props) {
           />
           <PlayerBoard
             hand={hand}
-            deck={deck}
             battlefield={battlefield}
             graveyard={graveyard}
             exile={exile}
-            draw={draw}
             engaged={engaged}
             engageCard={engageCard}
+            addToken={addToken}
+            tokensMap={tokensMap}
             tokens={related.data ?? []}
             sendCardTo={sendCardTo}
           />

@@ -22,7 +22,7 @@ const Game = () => {
         playerOne: null,
         playerTwo: null,
       }}
-      initialPresence={{ cursor: null }}
+      initialPresence={{ lastPlayedCard: null }}
     >
       <ClientSideSuspense
         fallback={

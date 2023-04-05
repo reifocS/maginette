@@ -1,5 +1,5 @@
 import { Fields, Datum } from "@/types";
-import { useRef, useEffect, Fragment } from "react";
+import { useRef, useEffect, Fragment, useState } from "react";
 
 export const fields: Fields[] = [
   "battlefield",
@@ -19,6 +19,7 @@ type ContextMenuProps = {
   onSwapped: () => void;
   sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any): void;
   card: Datum;
+  addToken: (cardId: string, [power, thougness]: [number, number]) => void;
 };
 
 const CustomContextMenu = ({
@@ -30,9 +31,12 @@ const CustomContextMenu = ({
   onSwapped,
   sendCardTo,
   card,
+  addToken,
 }: ContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  const [power, setPower] = useState(0);
+  const [thougness, setToughness] = useState(0);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -110,6 +114,29 @@ const CustomContextMenu = ({
           }}
         >
           Show card in another window
+        </li>
+        <li
+          className={className}
+          onClick={() => {
+            addToken(card.id, [power, thougness]);
+          }}
+        >
+          Add token +
+          <input
+            type="number"
+            className="w-[30px]"
+            value={power}
+            onChange={(e) => setPower(+e.target.value)}
+            placeholder="x"
+          ></input>
+          /+
+          <input
+            type="number"
+            className="w-[30px]"
+            value={thougness}
+            onChange={(e) => setToughness(+e.target.value)}
+            placeholder="x"
+          ></input>
         </li>
       </ul>
     </div>

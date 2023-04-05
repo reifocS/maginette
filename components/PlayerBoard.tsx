@@ -4,15 +4,17 @@ import Card from "./Card";
 
 type PlayerBoardProps = {
   hand: Datum[];
-  deck: Datum[];
   battlefield: Datum[];
   graveyard: Datum[];
   exile: Datum[];
-  draw: () => void;
   tokens: Datum[];
   engaged: string[];
   engageCard: (cardId: string, e: boolean) => void;
   sendCardTo: (from: Fields, to: Fields, card: Datum, payload?: any) => void;
+  addToken: (cardId: string, values: [number, number]) => void;
+  tokensMap: {
+    [k: string]: [number, number];
+  };
 };
 
 export default function PlayerBoard({
@@ -21,11 +23,11 @@ export default function PlayerBoard({
   exile,
   battlefield,
   hand,
-  deck,
-  draw,
+  addToken,
   tokens,
   engageCard,
   engaged,
+  tokensMap,
 }: PlayerBoardProps) {
   return (
     <>
@@ -37,6 +39,8 @@ export default function PlayerBoard({
         engaged={engaged}
         engageCard={engageCard}
         sendCardTo={sendCardTo}
+        addToken={addToken}
+        tokensMap={tokensMap}
       />
       <p className="text-xl font-extrabold">Hand</p>
       <Cards
@@ -46,6 +50,8 @@ export default function PlayerBoard({
         sendCardTo={sendCardTo}
         engaged={engaged}
         engageCard={engageCard}
+        addToken={addToken}
+        tokensMap={tokensMap}
       />
       <p className="text-xl font-extrabold">Graveyard</p>
 
@@ -58,6 +64,8 @@ export default function PlayerBoard({
             engaged={engaged}
             engageCard={engageCard}
             sendCardTo={sendCardTo}
+            addToken={addToken}
+            tokensMap={tokensMap}
           />
         </details>
       </summary>
@@ -72,6 +80,8 @@ export default function PlayerBoard({
             sendCardTo={sendCardTo}
             engaged={engaged}
             engageCard={engageCard}
+            addToken={addToken}
+            tokensMap={tokensMap}
           />
         </details>
       </summary>
@@ -86,6 +96,8 @@ export default function PlayerBoard({
             engageCard={engageCard}
             field="tokens"
             sendCardTo={sendCardTo}
+            addToken={addToken}
+            tokensMap={tokensMap}
           />
         </details>
       </summary>

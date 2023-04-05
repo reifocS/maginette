@@ -10,10 +10,14 @@ type Props = {
     readonly hand: CardFromLiveList;
     readonly battlefield: CardFromLiveList;
     readonly engaged: readonly string[];
+    readonly tokens: ReadonlyMap<string, [number, number]>;
   } | null;
 };
 
 export default function OpponentBoard({ player }: Props) {
+  console.log({ player });
+
+  const tokens = Object.fromEntries(player?.tokens?.entries() ?? ({} as any));
   return (
     <div>
       <p className="text-xl font-extrabold">hand</p>
@@ -49,6 +53,13 @@ export default function OpponentBoard({ player }: Props) {
               throw new Error("Should never happen.");
             }}
             isOpponent={true}
+            addToken={function (
+              cardId: string,
+              [power, thougness]: [number, number]
+            ): void {
+              throw new Error("Should never happen.");
+            }}
+            tokensMap={tokens}
           />
         </details>
       </summary>
@@ -73,6 +84,13 @@ export default function OpponentBoard({ player }: Props) {
               throw new Error("Should never happen.");
             }}
             isOpponent={true}
+            addToken={function (
+              cardId: string,
+              [power, thougness]: [number, number]
+            ): void {
+              throw new Error("Should never happen.");
+            }}
+            tokensMap={tokens}
           />
         </details>
       </summary>
@@ -95,6 +113,13 @@ export default function OpponentBoard({ player }: Props) {
           throw new Error("Should never happen.");
         }}
         isOpponent={true}
+        addToken={function (
+          cardId: string,
+          [power, thougness]: [number, number]
+        ): void {
+          throw new Error("Should never happen.");
+        }}
+        tokensMap={tokens}
       />
     </div>
   );
