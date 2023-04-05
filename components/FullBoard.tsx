@@ -290,6 +290,7 @@ export default function FullBoard({ player }: Props) {
         draw={draw}
         onShuffle={onShuffle}
         onReset={onReset}
+        desengageAll={() => setEngaged([])}
       />
       <div className="flex flex-col gap-4">
         <div className="border-b-4">
