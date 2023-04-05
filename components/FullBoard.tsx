@@ -9,6 +9,8 @@ import { useStorage, useMutation } from "@/liveblocks.config";
 import { LiveObject, LiveList } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import ResizeHandle from "./ResizeHandle";
 
 function processRawText(fromArena: string) {
   if (fromArena.trim() === "") return [];
@@ -275,22 +277,22 @@ export default function FullBoard({ player }: Props) {
           <button>Create deck</button>
         </form>
       )}
-      <div className="flex gap-3">
-        <div className="border-r-2 w-[50%]">
-          {isLoading && fetchStatus !== "idle" && (
-            <div
-              style={{
-                borderTopColor: "transparent",
-              }}
-              className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
-            ></div>
-          )}
-          <Controls
-            deck={deck}
-            draw={draw}
-            onShuffle={onShuffle}
-            onReset={onReset}
-          />
+      {isLoading && fetchStatus !== "idle" && (
+        <div
+          style={{
+            borderTopColor: "transparent",
+          }}
+          className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
+        ></div>
+      )}
+      <Controls
+        deck={deck}
+        draw={draw}
+        onShuffle={onShuffle}
+        onReset={onReset}
+      />
+      <PanelGroup direction="horizontal">
+        <Panel defaultSize={50}>
           <PlayerBoard
             hand={hand}
             deck={deck}
@@ -303,11 +305,12 @@ export default function FullBoard({ player }: Props) {
             tokens={related.data ?? []}
             sendCardTo={sendCardTo}
           />
-        </div>
-        <div>
+        </Panel>
+        <ResizeHandle />
+        <Panel minSize={20}>
           <OpponentBoard player={otherPlayer} />
-        </div>
-      </div>
+        </Panel>
+      </PanelGroup>
     </>
   );
 }
