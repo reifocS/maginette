@@ -1,0 +1,42 @@
+import { LiveList, LiveObject, createClient } from "@liveblocks/client";
+import { createRoomContext } from "@liveblocks/react";
+
+
+type Presence = {
+    cursor: { x: number, y: number } | null,
+    // ...
+};
+
+type LiveCard = LiveObject<{
+    id: string,
+    name: string;
+    card_faces?: LiveList<LiveCard>
+    image_uris: LiveObject<{
+        normal: string;
+    }>;
+}>;
+
+
+type GameData = LiveObject<{
+    deck: LiveList<LiveCard>;
+    related: LiveList<LiveCard>;
+    graveyard: LiveList<LiveCard>;
+    exile: LiveList<LiveCard>;
+    hand: LiveList<LiveCard>;
+    battlefield: LiveList<LiveCard>;
+    engaged: LiveList<string>;
+}>
+
+type Storage = {
+    playerOne: GameData | null;
+    playerTwo: GameData | null
+};
+
+const client = createClient({
+    publicApiKey: "pk_dev_leijKDtkwyqdAw8KP_KQt3YwEYho23NZVpt2BCFjUcxE1RoGMoheiTdwaGh_5ohg",
+});
+
+
+export const {
+    suspense: { RoomProvider, useStorage, useMutation },
+} = createRoomContext<Presence, Storage>(client);

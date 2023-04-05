@@ -136,3 +136,29 @@ export interface RelatedUris {
     tcgplayer_infinite_decks: string;
     edhrec: string;
 }
+
+
+export type Fields =
+    | "battlefield"
+    | "graveyard"
+    | "exile"
+    | "hand"
+    | "deck"
+    | "tokens";
+
+export type Point = {
+    x: number;
+    y: number;
+};
+
+export type OpponentCard = {
+    readonly id: string;
+    readonly name: string;
+    readonly card_faces?: readonly any[] | undefined;
+    readonly image_uris: {
+        readonly normal: string;
+    };
+}
+
+
+export type CardFromLiveList = readonly OpponentCard[];
