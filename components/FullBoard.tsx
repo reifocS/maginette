@@ -190,6 +190,7 @@ export default function FullBoard({ player }: Props) {
     let d = [];
     for (const card of data) {
       const amountInDeckToAdd = Number(
+        //Support double faced card
         memoAmount.get(card.name.split("//")[0].trim())
       );
       for (let i = 0; i < amountInDeckToAdd; ++i) {
