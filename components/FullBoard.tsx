@@ -88,7 +88,7 @@ export default function FullBoard({ player }: Props) {
   const queryClient = useQueryClient();
 
   const [deckFromText, setDeckFromText] = useState("");
-  const { data, isLoading, fetchStatus } = useCards(
+  const { data, isLoading, fetchStatus, isSuccess } = useCards(
     Array.from(processRawText(deckFromText))
   );
 
@@ -281,7 +281,6 @@ export default function FullBoard({ player }: Props) {
   return (
     <>
       room id: {room}
-      <h1 className="font-extrabold text-center">Opponent</h1>
       {deckFromText.trim() === "" && (
         <form
           className={`${"flex flex-col grow-0 items-center content-center"}`}
@@ -333,33 +332,38 @@ export default function FullBoard({ player }: Props) {
           className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
         ></div>
       )}
-      <div className="flex flex-col gap-4" key={cardPositionKey}>
-        <div className="border-b-4">
-          <OpponentBoard player={otherPlayer} />
-        </div>
-        <div>
-          <Controls
-            deck={deck}
-            draw={draw}
-            onShuffle={onShuffle}
-            onReset={onReset}
-            desengageAll={() => setEngaged([])}
-            resetPosition={() => setCardPositionKey((prev) => prev + 1)}
-          />
-          <PlayerBoard
-            hand={hand}
-            battlefield={battlefield}
-            graveyard={graveyard}
-            exile={exile}
-            engaged={engaged}
-            engageCard={engageCard}
-            addToken={addToken}
-            tokensMap={tokensMap}
-            tokens={related.data ?? []}
-            sendCardTo={sendCardTo}
-          />
-        </div>
-      </div>
+      {isSuccess && (
+        <>
+          <h1 className="font-extrabold text-center">Opponent</h1>
+          <div className="flex flex-col gap-4" key={cardPositionKey}>
+            <div className="border-b-4">
+              <OpponentBoard player={otherPlayer} />
+            </div>
+            <div>
+              <Controls
+                deck={deck}
+                draw={draw}
+                onShuffle={onShuffle}
+                onReset={onReset}
+                desengageAll={() => setEngaged([])}
+                resetPosition={() => setCardPositionKey((prev) => prev + 1)}
+              />
+              <PlayerBoard
+                hand={hand}
+                battlefield={battlefield}
+                graveyard={graveyard}
+                exile={exile}
+                engaged={engaged}
+                engageCard={engageCard}
+                addToken={addToken}
+                tokensMap={tokensMap}
+                tokens={related.data ?? []}
+                sendCardTo={sendCardTo}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
