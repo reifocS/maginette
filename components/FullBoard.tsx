@@ -255,6 +255,9 @@ export default function FullBoard({ player }: Props) {
 
   function addToken(cardId: string, values: [number, number]) {
     tokensMap[cardId] = values;
+    if(values[0] === 0 && values[1] === 0) {
+      delete tokensMap[cardId];
+    }
     setTokens(Object.entries(tokensMap));
   }
 
