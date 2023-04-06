@@ -55,6 +55,10 @@ export default function Card({
       event.preventDefault();
       setContextMenuPosition({ x: event.pageX, y: event.pageY });
     },
+
+    onDoubleClick: ({}) => {
+      engageCard(card.id, !isEngaged);
+    },
   });
 
   const handleContextMenuClose = () => {
@@ -102,16 +106,16 @@ export default function Card({
           alt={src.name}
         ></img>
         {hasToken && (
-          <div className="absolute top-8 right-4 bg-black rounded-full p-2 z-[99999]">{`${tokensMap[card.id][0]}/${
-            tokensMap[card.id][1]
-          }`}</div>
+          <div className="absolute top-8 right-4 bg-black rounded-full p-2 z-[99999]">{`${
+            tokensMap[card.id][0]
+          }/${tokensMap[card.id][1]}`}</div>
         )}
       </div>
       {!isOpponent && contextMenuPosition && (
         <CustomContextMenu
           field={field}
           onEngaged={() => {
-            isEngaged ? engageCard(card.id, false) : engageCard(card.id, true);
+            engageCard(card.id, !isEngaged);
           }}
           onSwapped={() => {
             if (card.card_faces) setSwap((prev) => !prev);
