@@ -59,6 +59,7 @@ export default function Card({
     onDoubleClick: ({}) => {
       if (field === "battlefield" && !isOpponent)
         engageCard(card.id, !isEngaged);
+      if (isOpponent) setSwap((prev) => !prev);
     },
   });
 

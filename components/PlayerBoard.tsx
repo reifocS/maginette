@@ -1,6 +1,5 @@
 import { Datum, Fields } from "@/types";
 import Cards from "./Cards";
-import Card from "./Card";
 
 type PlayerBoardProps = {
   hand: Datum[];
