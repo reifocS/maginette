@@ -105,7 +105,19 @@ export default function FullBoard({ player }: Props) {
       ?.filter((v) => v.all_parts && v.all_parts.length > 0)
       .flatMap((v) => v.all_parts) ?? [];
 
-  const related = useCards(Array.from(new Set(allParts.map((v) => v.name))));
+  const related = useCards(
+    Array.from(
+      new Set(
+        allParts.map((v) => {
+          if (v.name.includes("//")) {
+            //Double faced card
+            return v.name.split("//")[0].trim();
+          }
+          return v.name;
+        })
+      )
+    )
+  );
   const memoAmount = useMemo(
     () => processCardWithTheirAmount(deckFromText),
     [deckFromText]
@@ -177,7 +189,9 @@ export default function FullBoard({ player }: Props) {
     }
     let d = [];
     for (const card of data) {
-      const amountInDeckToAdd = Number(memoAmount.get(card.name));
+      const amountInDeckToAdd = Number(
+        memoAmount.get(card.name.split("//")[0].trim())
+      );
       for (let i = 0; i < amountInDeckToAdd; ++i) {
         d.push({ ...card, id: card.id + "-" + i });
       }
@@ -256,6 +270,8 @@ export default function FullBoard({ player }: Props) {
     setHand((prev) => [...prev, deck[0]]);
     setDeck((prev) => prev.slice(1));
   }
+
+  console.log({ deck, data });
 
   return (
     <>
