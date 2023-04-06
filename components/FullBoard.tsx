@@ -128,6 +128,7 @@ export default function FullBoard({ player }: Props) {
   const [battlefield, setBattlefield] = useState<Datum[]>([]);
   const [engaged, setEngaged] = useState<string[]>([]);
   const [tokens, setTokens] = useState<[string, [number, number]][]>([]);
+  const [cardPositionKey, setCardPositionKey] = useState(1);
 
   const tokensMap = Object.fromEntries(tokens);
 
@@ -255,7 +256,7 @@ export default function FullBoard({ player }: Props) {
 
   function addToken(cardId: string, values: [number, number]) {
     tokensMap[cardId] = values;
-    if(values[0] === 0 && values[1] === 0) {
+    if (values[0] === 0 && values[1] === 0) {
       delete tokensMap[cardId];
     }
     setTokens(Object.entries(tokensMap));
@@ -332,7 +333,7 @@ export default function FullBoard({ player }: Props) {
           className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
         ></div>
       )}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" key={cardPositionKey}>
         <div className="border-b-4">
           <OpponentBoard player={otherPlayer} />
         </div>
@@ -343,6 +344,7 @@ export default function FullBoard({ player }: Props) {
             onShuffle={onShuffle}
             onReset={onReset}
             desengageAll={() => setEngaged([])}
+            resetPosition={() => setCardPositionKey((prev) => prev + 1)}
           />
           <PlayerBoard
             hand={hand}

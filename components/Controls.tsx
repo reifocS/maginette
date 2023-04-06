@@ -14,6 +14,7 @@ type Props = {
   onShuffle: () => void;
   onReset: () => void;
   desengageAll: () => void;
+  resetPosition: () => void;
 };
 
 export default function Controls({
@@ -22,6 +23,7 @@ export default function Controls({
   onReset,
   onShuffle,
   desengageAll,
+  resetPosition
 }: Props) {
   const playerOneLife = useStorage((root) => root.playerOne?.life);
   const playerTwoLife = useStorage((root) => root.playerTwo?.life);
@@ -45,6 +47,7 @@ export default function Controls({
       <button onClick={onShuffle}>Shuffle</button>
       <button onClick={onReset}>Reset</button>
       <button onClick={desengageAll}>Desengage all</button>
+      <button onClick={resetPosition}>Reset all position</button>
       {/* <button disabled={!canUndo} onClick={undo}>
         undo
       </button>
