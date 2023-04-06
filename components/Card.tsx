@@ -57,7 +57,8 @@ export default function Card({
     },
 
     onDoubleClick: ({}) => {
-      engageCard(card.id, !isEngaged);
+      if (field === "battlefield" && !isOpponent)
+        engageCard(card.id, !isEngaged);
     },
   });
 
