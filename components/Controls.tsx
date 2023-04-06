@@ -17,13 +17,16 @@ type Props = {
   resetPosition: () => void;
 };
 
+const buttonClassname =
+  "inline-flex text-white bg-slate-500 border-0 py-1 px-4 focus:outline-none hover:bg-slate-600 rounded";
+
 export default function Controls({
   deck,
   draw,
   onReset,
   onShuffle,
   desengageAll,
-  resetPosition
+  resetPosition,
 }: Props) {
   const playerOneLife = useStorage((root) => root.playerOne?.life);
   const playerTwoLife = useStorage((root) => root.playerTwo?.life);
@@ -41,20 +44,32 @@ export default function Controls({
   //   const redo = useRedo();
   return (
     <div className="flex gap-3 flex-wrap">
-      <button disabled={deck.length === 0} onClick={draw}>
+      <button
+        className={buttonClassname}
+        disabled={deck.length === 0}
+        onClick={draw}
+      >
         draw ({deck.length} left)
       </button>
-      <button onClick={onShuffle}>Shuffle</button>
-      <button onClick={onReset}>Reset</button>
-      <button onClick={desengageAll}>Desengage all</button>
-      <button onClick={resetPosition}>Reset all position</button>
+      <button className={buttonClassname} onClick={onShuffle}>
+        Shuffle
+      </button>
+      <button className={buttonClassname} onClick={onReset}>
+        Reset
+      </button>
+      <button className={buttonClassname} onClick={desengageAll}>
+        Desengage all
+      </button>
+      <button className={buttonClassname} onClick={resetPosition}>
+        Reset all position
+      </button>
       {/* <button disabled={!canUndo} onClick={undo}>
         undo
       </button>
       <button disabled={!canRedo} onClick={redo}>
         redo
       </button> */}
-      <div>
+      <div className="flex items-center gap-2">
         P1{" "}
         <input
           className="w-[60px]"
@@ -62,10 +77,9 @@ export default function Controls({
           onChange={(e) => mutatePlayerOneLife(+e.target.value)}
           value={playerOneLife}
         ></input>
-        pv
+        pv /{" "}
       </div>
-      /
-      <div>
+      <div className="flex items-center gap-2">
         P2{" "}
         <input
           className="w-[60px]"
@@ -73,8 +87,8 @@ export default function Controls({
           onChange={(e) => mutatePlayerTwoLife(+e.target.value)}
           value={playerTwoLife}
         ></input>
+        pv
       </div>
-      pv
     </div>
   );
 }

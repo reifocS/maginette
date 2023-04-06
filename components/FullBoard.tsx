@@ -9,8 +9,6 @@ import { useStorage, useMutation } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import ResizeHandle from "./ResizeHandle";
 
 function processRawText(fromArena: string) {
   if (fromArena.trim() === "") return [];
