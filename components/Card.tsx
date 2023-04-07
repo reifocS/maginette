@@ -33,6 +33,7 @@ export default function Card({
   const [swap, setSwap] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const z = useRef(0);
+  const ref = useRef<HTMLDivElement>(null);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
     null
   );
@@ -60,6 +61,19 @@ export default function Card({
       if (field === "battlefield" && !isOpponent)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
+    },
+
+    onDragEnd: ({ xy }) => {
+      const containerDiv = document.getElementById("player_board");
+      const rect = containerDiv?.getBoundingClientRect();
+      const [x, y] = xy;
+      if (
+        rect &&
+        (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) &&
+        field !== "battlefield"
+      ) {
+        sendCardTo(field, "battlefield", card as any);
+      }
     },
   });
 
@@ -91,6 +105,7 @@ export default function Card({
   return (
     <>
       <div
+        ref={ref}
         style={{
           transform: transformStyle,
           touchAction: "none",
