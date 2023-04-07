@@ -5,7 +5,7 @@ import { generateRandomID, shuffle } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";
-import { useStorage, useMutation } from "@/liveblocks.config";
+import { useStorage, useMutation, useBatch } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
@@ -130,19 +130,17 @@ export default function FullBoard({ player }: Props) {
   const engaged = currentPlayer?.engaged ?? [];
   const exile = currentPlayer?.exile ?? [];
   const related = currentPlayer?.related ?? [];
+  const batch = useBatch();
 
-  console.log({ currentPlayer });
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
 
   const setDeck = useMutation(
-    // Note the second argument
     ({ storage }, deck: CardFromLiveList) => {
       storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
     },
     []
   );
   const setHand = useMutation(
-    // Note the second argument
     ({ storage }, hand: CardFromLiveList) => {
       storage.get(currentPlayerId)?.set("hand", dataToLiveList(hand));
     },
@@ -150,7 +148,6 @@ export default function FullBoard({ player }: Props) {
   );
 
   const setEngaged = useMutation(
-    // Note the second argument
     ({ storage }, engaged: string[]) => {
       storage.get(currentPlayerId)?.set("engaged", new LiveList(engaged));
     },
@@ -158,7 +155,6 @@ export default function FullBoard({ player }: Props) {
   );
 
   const setBattlefield = useMutation(
-    // Note the second argument
     ({ storage }, battlefield: CardFromLiveList) => {
       storage
         .get(currentPlayerId)
@@ -168,7 +164,6 @@ export default function FullBoard({ player }: Props) {
   );
 
   const setGraveyard = useMutation(
-    // Note the second argument
     ({ storage }, graveyard: CardFromLiveList) => {
       storage.get(currentPlayerId)?.set("graveyard", dataToLiveList(graveyard));
     },
@@ -176,14 +171,12 @@ export default function FullBoard({ player }: Props) {
   );
 
   const setExile = useMutation(
-    // Note the second argument
     ({ storage }, exile: CardFromLiveList) => {
       storage.get(currentPlayerId)?.set("exile", dataToLiveList(exile));
     },
     []
   );
   const setTokens = useMutation(
-    // Note the second argument
     ({ storage }, tokens: [string, [number, number]][]) => {
       storage.get(currentPlayerId)?.set("tokens", new LiveMap(tokens));
     },
@@ -252,27 +245,29 @@ export default function FullBoard({ player }: Props) {
   };
 
   function sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any) {
-    const fromStateSetter = mappingFieldToStateSetter[from];
-    const toStateSetter = mappingFieldToStateSetter[to];
-    const fromState = mappingFieldToLiveState[from];
-    const toState = mappingFieldToLiveState[to];
-    if (to === "deck") {
-      if (!payload)
-        throw new Error("Payload missing when sending card to deck");
-      if (payload.position === "top") {
-        setDeck([card, ...deck]);
-      } else if (payload.position === "bottom") {
-        setDeck([...deck, card]);
+    batch(() => {
+      const fromStateSetter = mappingFieldToStateSetter[from];
+      const toStateSetter = mappingFieldToStateSetter[to];
+      const fromState = mappingFieldToLiveState[from];
+      const toState = mappingFieldToLiveState[to];
+      if (to === "deck") {
+        if (!payload)
+          throw new Error("Payload missing when sending card to deck");
+        if (payload.position === "top") {
+          setDeck([card, ...deck]);
+        } else if (payload.position === "bottom") {
+          setDeck([...deck, card]);
+        }
+        if (from !== "tokens") {
+          fromStateSetter(deck.filter((c) => c.id !== card.id));
+        }
+        return;
       }
       if (from !== "tokens") {
-        fromStateSetter(deck.filter((c) => c.id !== card.id));
+        fromStateSetter(fromState.filter((c) => c.id !== card.id));
       }
-      return;
-    }
-    if (from !== "tokens") {
-      fromStateSetter(fromState.filter((c) => c.id !== card.id));
-    }
-    toStateSetter([...toState, { ...card, id: generateRandomID() }]);
+      toStateSetter([...toState, { ...card, id: generateRandomID() }]);
+    });
   }
 
   function onReset() {
@@ -297,8 +292,10 @@ export default function FullBoard({ player }: Props) {
 
   function draw() {
     if (deck.length === 0) return;
-    setHand([...hand, deck[0]]);
-    setDeck(deck.slice(1));
+    batch(() => {
+      setHand([...hand, deck[0]]);
+      setDeck(deck.slice(1));
+    });
   }
 
   console.log({ deck, data });
