@@ -6,10 +6,10 @@ import {
   useUndo,
   useRedo,
 } from "@/liveblocks.config";
-import { CardFromLiveList, Datum } from "@/types";
+import { Datum } from "@/types";
 
 type Props = {
-  deck: CardFromLiveList;
+  deck: Datum[];
   draw: () => void;
   onShuffle: () => void;
   onReset: () => void;
@@ -38,10 +38,10 @@ export default function Controls({
     ({ storage }, life: number) => storage.get("playerTwo")?.set("life", life),
     []
   );
-  const canUndo = useCanUndo();
-  const canRedo = useCanRedo();
-  const undo = useUndo();
-  const redo = useRedo();
+  //   const canUndo = useCanUndo();
+  //   const canRedo = useCanRedo();
+  //   const undo = useUndo();
+  //   const redo = useRedo();
   return (
     <div className="flex gap-3 flex-wrap">
       <button
@@ -54,18 +54,21 @@ export default function Controls({
       <button className={buttonClassname} onClick={onShuffle}>
         Shuffle
       </button>
+      <button className={buttonClassname} onClick={onReset}>
+        Reset
+      </button>
       <button className={buttonClassname} onClick={desengageAll}>
         Desengage all
       </button>
       <button className={buttonClassname} onClick={resetPosition}>
         Reset all position
       </button>
-      <button className={buttonClassname} disabled={!canUndo} onClick={undo}>
+      {/* <button disabled={!canUndo} onClick={undo}>
         undo
       </button>
-      <button className={buttonClassname} disabled={!canRedo} onClick={redo}>
+      <button disabled={!canRedo} onClick={redo}>
         redo
-      </button>
+      </button> */}
       <div className="flex items-center gap-2">
         P1{" "}
         <input

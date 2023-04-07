@@ -1,13 +1,13 @@
-import { CardFromLiveList, Datum, Fields } from "@/types";
+import { Datum, Fields } from "@/types";
 import Cards from "./Cards";
 
 type PlayerBoardProps = {
-  hand: CardFromLiveList;
-  battlefield: CardFromLiveList;
-  graveyard: CardFromLiveList;
-  exile: CardFromLiveList;
-  tokens: CardFromLiveList;
-  engaged: readonly string[];
+  hand: Datum[];
+  battlefield: Datum[];
+  graveyard: Datum[];
+  exile: Datum[];
+  tokens: Datum[];
+  engaged: string[];
   engageCard: (cardId: string, e: boolean) => void;
   sendCardTo: (from: Fields, to: Fields, card: Datum, payload?: any) => void;
   addToken: (cardId: string, values: [number, number]) => void;

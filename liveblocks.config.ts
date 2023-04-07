@@ -40,5 +40,5 @@ const client = createClient({
 
 
 export const {
-    suspense: { RoomProvider, useStorage, useMutation, useUndo, useCanRedo, useCanUndo, useRedo, useBatch },
+    suspense: { RoomProvider, useStorage, useMutation, useUndo, useCanRedo, useCanUndo, useRedo },
 } = createRoomContext<Presence, Storage>(client);

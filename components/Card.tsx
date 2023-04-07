@@ -7,7 +7,7 @@ type PropsCard = {
   card: Datum | OpponentCard;
   show: boolean;
   field: Fields;
-  engaged: readonly string[];
+  engaged: string[];
   isOpponent: boolean;
   engageCard: (cardId: string, e: boolean) => void;
   sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any): void;
