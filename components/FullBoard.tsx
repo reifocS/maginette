@@ -302,6 +302,14 @@ export default function FullBoard({ player }: Props) {
 
   return (
     <>
+     {isLoading && fetchStatus !== "idle" && (
+        <div
+          style={{
+            borderTopColor: "transparent",
+          }}
+          className="w-16 ml-2 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
+        ></div>
+      )}
       room id: {room}
       {deck === undefined ||
         (deck.length === 0 && (
@@ -347,14 +355,7 @@ export default function FullBoard({ player }: Props) {
             <button>Create deck</button>
           </form>
         ))}
-      {isLoading && fetchStatus !== "idle" && (
-        <div
-          style={{
-            borderTopColor: "transparent",
-          }}
-          className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
-        ></div>
-      )}
+     
       {deck && deck.length > 0 && (
         <>
           <h1 className="font-extrabold text-center">Opponent</h1>
