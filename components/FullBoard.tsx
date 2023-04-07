@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useCards from "@/hooks/useCards";
-import { Datum, Fields } from "@/types";
+import { CardFromLiveList, Datum, Fields } from "@/types";
 import { generateRandomID, shuffle } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";
-import { useStorage, useMutation } from "@/liveblocks.config";
+import { useStorage, useMutation, useBatch } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
@@ -33,7 +33,7 @@ type Props = {
   player: number;
 };
 
-function dataToLiveList(data?: Datum[]) {
+function dataToLiveList(data?: Datum[] | CardFromLiveList) {
   return new LiveList(
     data?.map(
       (d) =>
@@ -86,7 +86,7 @@ export default function FullBoard({ player }: Props) {
   const queryClient = useQueryClient();
 
   const [deckFromText, setDeckFromText] = useState("");
-  const { data, isLoading, fetchStatus, isSuccess } = useCards(
+  const { data, isLoading, fetchStatus } = useCards(
     Array.from(processRawText(deckFromText))
   );
 
@@ -94,6 +94,7 @@ export default function FullBoard({ player }: Props) {
   const playerTwo = useStorage((root) => root.playerTwo);
 
   const otherPlayer = player === 0 ? playerTwo : playerOne;
+  const currentPlayer = player === 1 ? playerTwo : playerOne;
 
   const router = useRouter();
   const { room } = router.query;
@@ -103,7 +104,7 @@ export default function FullBoard({ player }: Props) {
       ?.filter((v) => v.all_parts && v.all_parts.length > 0)
       .flatMap((v) => v.all_parts) ?? [];
 
-  const related = useCards(
+  const { data: relatedCards } = useCards(
     Array.from(
       new Set(
         allParts.map((v) => {
@@ -120,70 +121,87 @@ export default function FullBoard({ player }: Props) {
     () => processCardWithTheirAmount(deckFromText),
     [deckFromText]
   );
-  const [deck, setDeck] = useState<Datum[]>([]);
-  const [hand, setHand] = useState<Datum[]>([]);
-  const [graveyard, setGraveyard] = useState<Datum[]>([]);
-  const [battlefield, setBattlefield] = useState<Datum[]>([]);
-  const [engaged, setEngaged] = useState<string[]>([]);
-  const [tokens, setTokens] = useState<[string, [number, number]][]>([]);
-  const [cardPositionKey, setCardPositionKey] = useState(1);
 
-  const tokensMap = Object.fromEntries(tokens);
+  const currentPlayerId = player === 0 ? "playerOne" : "playerTwo";
+  const deck = useMemo(() => currentPlayer?.deck ?? [], [currentPlayer?.deck]);
+  const hand = currentPlayer?.hand ?? [];
+  const graveyard = currentPlayer?.graveyard ?? [];
+  const battlefield = currentPlayer?.battlefield ?? [];
+  const engaged = currentPlayer?.engaged ?? [];
+  const exile = currentPlayer?.exile ?? [];
+  const related = currentPlayer?.related ?? [];
+  const batch = useBatch();
 
-  const [exile, setExile] = useState<Datum[]>([]);
-  const syncWithLiveData = useMutation(
-    ({ storage }) => {
-      if (player === 0) {
-        storage.set(
-          "playerOne",
-          dataToLiveObject(
-            hand,
-            graveyard,
-            exile,
-            engaged,
-            battlefield,
-            deck,
-            related.data,
-            storage.get("playerOne")?.get("life"),
-            tokens
-          )
-        );
-      } else {
-        storage.set(
-          "playerTwo",
-          dataToLiveObject(
-            hand,
-            graveyard,
-            exile,
-            engaged,
-            battlefield,
-            deck,
-            related.data,
-            storage.get("playerTwo")?.get("life"),
-            tokens
-          )
-        );
-      }
+  const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
+
+  const setDeck = useMutation(
+    ({ storage }, deck: CardFromLiveList) => {
+      storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
     },
-    [
-      deck,
-      hand,
-      graveyard,
-      battlefield,
-      engaged,
-      player,
-      exile,
-      related.data, //tokens card
-      tokens, // +x/+x
-    ] // Works just like it would in useCallback
+    []
+  );
+  const setHand = useMutation(
+    ({ storage }, hand: CardFromLiveList) => {
+      storage.get(currentPlayerId)?.set("hand", dataToLiveList(hand));
+    },
+    []
+  );
+
+  const setEngaged = useMutation(
+    ({ storage }, engaged: string[]) => {
+      storage.get(currentPlayerId)?.set("engaged", new LiveList(engaged));
+    },
+    []
+  );
+
+  const setBattlefield = useMutation(
+    ({ storage }, battlefield: CardFromLiveList) => {
+      storage
+        .get(currentPlayerId)
+        ?.set("battlefield", dataToLiveList(battlefield));
+    },
+    []
+  );
+
+  const setGraveyard = useMutation(
+    ({ storage }, graveyard: CardFromLiveList) => {
+      storage.get(currentPlayerId)?.set("graveyard", dataToLiveList(graveyard));
+    },
+    []
+  );
+
+  const setExile = useMutation(
+    ({ storage }, exile: CardFromLiveList) => {
+      storage.get(currentPlayerId)?.set("exile", dataToLiveList(exile));
+    },
+    []
+  );
+  const setTokens = useMutation(
+    ({ storage }, tokens: [string, [number, number]][]) => {
+      storage.get(currentPlayerId)?.set("tokens", new LiveMap(tokens));
+    },
+    []
+  );
+  const setRelated = useMutation(
+    // Note the second argument
+    ({ storage }, related: CardFromLiveList) => {
+      storage.get(currentPlayerId)?.set("related", dataToLiveList(related));
+    },
+    []
   );
 
   useEffect(() => {
-    syncWithLiveData();
-  }, [syncWithLiveData]);
+    if (relatedCards) {
+      setRelated(relatedCards);
+    }
+  }, [setRelated, relatedCards]);
 
+  const [cardPositionKey, setCardPositionKey] = useState(1);
+  const tokensMap = Object.fromEntries(tokens);
+
+  //TODO move this data select to onSuccess cb of usequery
   useEffect(() => {
-    if (!data) {
+    if (!data || deck.length > 0) {
       return;
     }
     let d = [];
@@ -197,24 +215,15 @@ export default function FullBoard({ player }: Props) {
       }
     }
     setDeck(shuffle(d));
-
-    return () => {
-      setHand([]);
-      setGraveyard([]);
-      setExile([]);
-      setDeck([]);
-      setBattlefield([]);
-      setEngaged([]);
-    };
-  }, [data, memoAmount]);
+  }, [data, memoAmount, deck, setDeck]);
 
   function onShuffle() {
     setDeck(shuffle(deck));
   }
 
-  const mappingFieldToState: Record<
+  const mappingFieldToStateSetter: Record<
     Fields,
-    Dispatch<SetStateAction<Datum[]>>
+    (deck: CardFromLiveList) => void
   > = {
     deck: setDeck,
     battlefield: setBattlefield,
@@ -226,26 +235,39 @@ export default function FullBoard({ player }: Props) {
     },
   };
 
+  const mappingFieldToLiveState: Record<Fields, CardFromLiveList> = {
+    deck,
+    battlefield,
+    graveyard,
+    hand,
+    exile,
+    tokens: related,
+  };
+
   function sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any) {
-    const fromState = mappingFieldToState[from];
-    const toState = mappingFieldToState[to];
-    if (to === "deck") {
-      if (!payload)
-        throw new Error("Payload missing when sending card to deck");
-      if (payload.position === "top") {
-        setDeck((prev) => [card, ...prev]);
-      } else if (payload.position === "bottom") {
-        setDeck((prev) => [...prev, card]);
+    batch(() => {
+      const fromStateSetter = mappingFieldToStateSetter[from];
+      const toStateSetter = mappingFieldToStateSetter[to];
+      const fromState = mappingFieldToLiveState[from];
+      const toState = mappingFieldToLiveState[to];
+      if (to === "deck") {
+        if (!payload)
+          throw new Error("Payload missing when sending card to deck");
+        if (payload.position === "top") {
+          setDeck([card, ...deck]);
+        } else if (payload.position === "bottom") {
+          setDeck([...deck, card]);
+        }
+        if (from !== "tokens") {
+          fromStateSetter(deck.filter((c) => c.id !== card.id));
+        }
+        return;
       }
       if (from !== "tokens") {
-        fromState((prev) => prev.filter((c) => c.id !== card.id));
+        fromStateSetter(fromState.filter((c) => c.id !== card.id));
       }
-      return;
-    }
-    if (from !== "tokens") {
-      fromState((prev) => prev.filter((c) => c.id !== card.id));
-    }
-    toState((prev) => [...prev, { ...card, id: generateRandomID() }]);
+      toStateSetter([...toState, { ...card, id: generateRandomID() }]);
+    });
   }
 
   function onReset() {
@@ -262,41 +284,52 @@ export default function FullBoard({ player }: Props) {
 
   function engageCard(cardId: string, engage: boolean) {
     if (engage) {
-      setEngaged((prev) => [...prev, cardId]);
+      setEngaged([...engaged, cardId]);
     } else {
-      setEngaged((prev) => prev.filter((c) => c !== cardId));
+      setEngaged(engaged.filter((c) => c !== cardId));
     }
   }
 
   function draw() {
     if (deck.length === 0) return;
-    setHand((prev) => [...prev, deck[0]]);
-    setDeck((prev) => prev.slice(1));
+    batch(() => {
+      setHand([...hand, deck[0]]);
+      setDeck(deck.slice(1));
+    });
   }
 
   console.log({ deck, data });
 
   return (
     <>
-      room id: {room}
-      {deckFromText.trim() === "" && (
-        <form
-          className={`${"flex flex-col grow-0 items-center content-center"}`}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const target = e.target as typeof e.target & {
-              cards: { value: string };
-            };
-            setDeckFromText(target.cards.value);
+     {isLoading && fetchStatus !== "idle" && (
+        <div
+          style={{
+            borderTopColor: "transparent",
           }}
-        >
-          <label htmlFor="cards">Paste deck here</label>
-          <textarea
-            name="cards"
-            id="cards"
-            cols={30}
-            rows={10}
-            defaultValue={`
+          className="w-16 ml-2 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
+        ></div>
+      )}
+      room id: {room}
+      {deck === undefined ||
+        (deck.length === 0 && (
+          <form
+            className={`${"flex flex-col grow-0 items-center content-center"}`}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const target = e.target as typeof e.target & {
+                cards: { value: string };
+              };
+              setDeckFromText(target.cards.value);
+            }}
+          >
+            <label htmlFor="cards">Paste deck here</label>
+            <textarea
+              name="cards"
+              id="cards"
+              cols={30}
+              rows={10}
+              defaultValue={`
 3 Ambitious Farmhand
 4 Reckoner Bankbuster
 2 Elspeth Resplendent
@@ -318,19 +351,12 @@ export default function FullBoard({ player }: Props) {
 3 Farewell
 4 Sunset Revelry
 3 Loran of the Third Path`}
-          ></textarea>
-          <button>Create deck</button>
-        </form>
-      )}
-      {isLoading && fetchStatus !== "idle" && (
-        <div
-          style={{
-            borderTopColor: "transparent",
-          }}
-          className="w-16 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
-        ></div>
-      )}
-      {isSuccess && (
+            ></textarea>
+            <button>Create deck</button>
+          </form>
+        ))}
+     
+      {deck && deck.length > 0 && (
         <>
           <h1 className="font-extrabold text-center">Opponent</h1>
           <div className="flex flex-col gap-4" key={cardPositionKey}>
@@ -355,7 +381,7 @@ export default function FullBoard({ player }: Props) {
                 engageCard={engageCard}
                 addToken={addToken}
                 tokensMap={tokensMap}
-                tokens={related.data ?? []}
+                tokens={related}
                 sendCardTo={sendCardTo}
               />
             </div>
