@@ -363,7 +363,7 @@ export default function FullBoard({ player }: Props) {
             <div className="border-b-4">
               <OpponentBoard player={otherPlayer} />
             </div>
-            <div>
+            <div id="player_board">
               <Controls
                 deck={deck}
                 draw={draw}
