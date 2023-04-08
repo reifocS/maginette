@@ -105,7 +105,10 @@ export default function PlayerBoard({
         </details>
       </summary>
 
-      <p className="text-xl font-extrabold">Tokens</p>
+      <div className="font-normal shortcut_container">
+        <b className="text-xl">Tokens</b> <kbd>shift</kbd> <kbd>click</kbd>
+        battlefield
+      </div>
       <summary>
         <details>
           <Cards

@@ -112,6 +112,9 @@ export default function Card({
       if (field === "hand" && !isOpponent && shiftKey) {
         sendCardTo(field, "battlefield", card as any);
       }
+      if (field === "tokens" && !isOpponent && shiftKey) {
+        sendCardTo(field, "battlefield", card as any);
+      }
     },
 
     onDragEnd: ({ xy }) => {
