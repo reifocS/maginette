@@ -233,6 +233,16 @@ export default function FullBoard({ player }: Props) {
     tokens: related,
   };
 
+  function searchCard(cardName: string) {
+    const cardToAdd = deck.find(card => card.name.toLowerCase().includes(cardName));
+    if(cardToAdd) {
+      batch(() => {
+        setDeck(deck.filter(c => c.id !== cardToAdd.id));
+        setHand([...hand, cardToAdd]);
+      })
+    }
+  }
+
   function sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any) {
     batch(() => {
       const fromStateSetter = mappingFieldToStateSetter[from];
@@ -367,6 +377,7 @@ export default function FullBoard({ player }: Props) {
                 onReset={onReset}
                 desengageAll={() => setEngaged([])}
                 resetPosition={() => setCardPositionKey((prev) => prev + 1)}
+                searchCard={searchCard}
               />
               <PlayerBoard
                 hand={hand}

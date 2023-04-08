@@ -15,6 +15,7 @@ type Props = {
   onReset: () => void;
   desengageAll: () => void;
   resetPosition: () => void;
+  searchCard: (cardName: string) => void;
 };
 
 const buttonClassname =
@@ -27,6 +28,7 @@ export default function Controls({
   onShuffle,
   desengageAll,
   resetPosition,
+  searchCard,
 }: Props) {
   const playerOneLife = useStorage((root) => root.playerOne?.life);
   const playerTwoLife = useStorage((root) => root.playerTwo?.life);
@@ -66,6 +68,26 @@ export default function Controls({
       <button className={buttonClassname} disabled={!canRedo} onClick={redo}>
         redo
       </button>
+      <form
+      className="flex gap-1"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const target = e.target as typeof e.target & {
+            card_name: {
+              value: string;
+            };
+          };
+          searchCard(target.card_name.value);
+        }}
+      >
+        <input
+          id="card_name"
+          name="card_name"
+          required
+          placeholder="card name"
+        ></input>
+        <button className={buttonClassname}>search in deck</button>
+      </form>
       <div className="flex items-center gap-2">
         P1{" "}
         <input
