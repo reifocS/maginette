@@ -20,6 +20,7 @@ type ContextMenuProps = {
   sendCardTo(from: Fields, to: Fields, card: Datum, payload?: any): void;
   card: Datum;
   addToken: (cardId: string, [power, thougness]: [number, number]) => void;
+  currentTokenValue?: [number, number];
 };
 
 const CustomContextMenu = ({
@@ -32,11 +33,16 @@ const CustomContextMenu = ({
   sendCardTo,
   card,
   addToken,
+  currentTokenValue,
 }: ContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const [power, setPower] = useState(0);
-  const [thougness, setToughness] = useState(0);
+  const [power, setPower] = useState(
+    currentTokenValue ? currentTokenValue[0] : 0
+  );
+  const [thougness, setToughness] = useState(
+    currentTokenValue ? currentTokenValue[1] : 0
+  );
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {

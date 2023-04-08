@@ -186,6 +186,7 @@ export default function Card({
           sendCardTo={sendCardTo}
           card={card as Datum}
           addToken={addToken}
+          currentTokenValue={tokensMap[card.id]}
         />
       )}
     </>
