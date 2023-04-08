@@ -157,6 +157,8 @@ export type OpponentCard = {
     readonly card_faces?: readonly any[] | undefined;
     readonly image_uris: {
         readonly normal: string;
+        readonly large: string;
+
     };
 }
 

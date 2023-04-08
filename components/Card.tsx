@@ -3,6 +3,7 @@ import { useGesture } from "@use-gesture/react";
 import { useState, useRef } from "react";
 import CustomContextMenu from "./ContextMenu";
 import { useMyPresence, useOthers } from "@/liveblocks.config";
+import { createPortal } from "react-dom";
 
 type PropsCard = {
   card: Datum | OpponentCard;
@@ -16,6 +17,7 @@ type PropsCard = {
   tokensMap: {
     [k: string]: [number, number];
   };
+  ctrlKey: boolean;
 };
 
 let zIndex = 1;
@@ -30,9 +32,11 @@ export default function Card({
   addToken,
   sendCardTo,
   tokensMap,
+  ctrlKey,
 }: PropsCard) {
   const [swap, setSwap] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isHover, setIsHover] = useState(false);
   const z = useRef(0);
   const ref = useRef<HTMLDivElement>(null);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
@@ -52,6 +56,12 @@ export default function Card({
   const bind = useGesture({
     onDragStart: () => {
       z.current = zIndex++;
+    },
+    onHover: () => {
+      setIsHover(true);
+    },
+    onMouseLeave: () => {
+      setIsHover(false);
     },
     onDrag: ({ offset: [x, y] }) => {
       const newX = Math.round(x / gridSize) * gridSize;
@@ -116,6 +126,23 @@ export default function Card({
 
   return (
     <>
+      {isHover && ctrlKey && 
+        createPortal(
+          <div
+            className="fixed top-4 right-8"
+            style={{
+              pointerEvents: "none",
+            }}
+          >
+            <img
+              draggable={false}
+              loading="eager"
+              src={src.image_uris?.normal}
+              alt={src.name}
+            ></img>
+          </div>,
+          document.getElementsByTagName("body")[0]
+        )}
       <div
         ref={ref}
         style={{
@@ -123,6 +150,7 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
+          opacity: isHover ? 0.5 : 1,
           border: isLastPlayed ? "1px solid red" : "",
         }}
         {...bind()}

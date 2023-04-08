@@ -13,6 +13,7 @@ type PropsCards = {
   tokensMap: {
     [k: string]: [number, number];
   };
+  ctrlKey: boolean;
 };
 export default function Cards({
   cards,
@@ -23,13 +24,15 @@ export default function Cards({
   engaged,
   isOpponent = false,
   addToken,
-  tokensMap
+  tokensMap,
+  ctrlKey,
 }: PropsCards) {
   return (
     <ul className="flex gap-3 flex-wrap">
       {cards.map((v) => (
         <li key={v.id}>
           <Card
+            ctrlKey={ctrlKey}
             card={v}
             field={field}
             show={show}

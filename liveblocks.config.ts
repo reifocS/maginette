@@ -13,6 +13,7 @@ type LiveCard = LiveObject<{
     card_faces?: LiveList<LiveCard>
     image_uris: LiveObject<{
         normal: string;
+        large: string;
     }>;
 }>;
 

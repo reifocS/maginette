@@ -14,6 +14,7 @@ type PlayerBoardProps = {
   tokensMap: {
     [k: string]: [number, number];
   };
+  ctrlKey: boolean;
 };
 
 export default function PlayerBoard({
@@ -27,6 +28,7 @@ export default function PlayerBoard({
   engageCard,
   engaged,
   tokensMap,
+  ctrlKey
 }: PlayerBoardProps) {
   return (
     <>
@@ -40,6 +42,7 @@ export default function PlayerBoard({
         sendCardTo={sendCardTo}
         addToken={addToken}
         tokensMap={tokensMap}
+        ctrlKey={ctrlKey}
       />
       <p className="text-xl font-extrabold">Hand</p>
       <Cards
@@ -51,6 +54,7 @@ export default function PlayerBoard({
         engageCard={engageCard}
         addToken={addToken}
         tokensMap={tokensMap}
+        ctrlKey={ctrlKey}
       />
       <p className="text-xl font-extrabold">Graveyard</p>
 
@@ -65,6 +69,7 @@ export default function PlayerBoard({
             sendCardTo={sendCardTo}
             addToken={addToken}
             tokensMap={tokensMap}
+            ctrlKey={ctrlKey}
           />
         </details>
       </summary>
@@ -81,6 +86,7 @@ export default function PlayerBoard({
             engageCard={engageCard}
             addToken={addToken}
             tokensMap={tokensMap}
+            ctrlKey={ctrlKey}
           />
         </details>
       </summary>
@@ -97,6 +103,7 @@ export default function PlayerBoard({
             sendCardTo={sendCardTo}
             addToken={addToken}
             tokensMap={tokensMap}
+            ctrlKey={ctrlKey}
           />
         </details>
       </summary>

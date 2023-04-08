@@ -14,6 +14,7 @@ import {
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
+import useKeyPress from "@/hooks/useKeyPressed";
 
 function processRawText(fromArena: string) {
   if (fromArena.trim() === "") return [];
@@ -45,7 +46,10 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
         new LiveObject({
           id: d.id,
           name: d.name,
-          image_uris: new LiveObject({ normal: d.image_uris?.normal }),
+          image_uris: new LiveObject({
+            normal: d.image_uris?.normal,
+            large: d.image_uris?.large,
+          }),
           card_faces: new LiveList(
             d.card_faces?.map(
               (cf) =>
@@ -54,6 +58,7 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
                   id: cf.id,
                   image_uris: new LiveObject({
                     normal: cf.image_uris.normal,
+                    large: cf.image_uris.large,
                   }),
                 })
             )
@@ -94,7 +99,9 @@ export default function FullBoard({ player }: Props) {
   const { data, isLoading, fetchStatus } = useCards(
     Array.from(processRawText(deckFromText))
   );
+  const ctlrKey: boolean = useKeyPress("Control");
 
+  console.log(ctlrKey);
   const playerOne = useStorage((root) => root.playerOne);
   const playerTwo = useStorage((root) => root.playerTwo);
 
@@ -234,12 +241,14 @@ export default function FullBoard({ player }: Props) {
   };
 
   function searchCard(cardName: string) {
-    const cardToAdd = deck.find(card => card.name.toLowerCase().includes(cardName));
-    if(cardToAdd) {
+    const cardToAdd = deck.find((card) =>
+      card.name.toLowerCase().includes(cardName)
+    );
+    if (cardToAdd) {
       batch(() => {
-        setDeck(deck.filter(c => c.id !== cardToAdd.id));
+        setDeck(deck.filter((c) => c.id !== cardToAdd.id));
         setHand([...hand, cardToAdd]);
-      })
+      });
     }
   }
 
@@ -249,7 +258,7 @@ export default function FullBoard({ player }: Props) {
       const toStateSetter = mappingFieldToStateSetter[to];
       const fromState = mappingFieldToLiveState[from];
       const toState = mappingFieldToLiveState[to];
-      console.log({from, to, card, fromState, toState})
+      console.log({ from, to, card, fromState, toState });
 
       if (to === "deck") {
         if (!payload)
@@ -367,7 +376,7 @@ export default function FullBoard({ player }: Props) {
           <h1 className="font-extrabold text-center">Opponent</h1>
           <div className="flex flex-col gap-4" key={cardPositionKey}>
             <div className="border-b-4">
-              <OpponentBoard player={otherPlayer} />
+              <OpponentBoard ctrlKey={ctlrKey} player={otherPlayer} />
             </div>
             <div id="player_board">
               <Controls
@@ -390,6 +399,7 @@ export default function FullBoard({ player }: Props) {
                 tokensMap={tokensMap}
                 tokens={related}
                 sendCardTo={sendCardTo}
+                ctrlKey={ctlrKey}
               />
             </div>
           </div>

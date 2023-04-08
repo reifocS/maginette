@@ -12,9 +12,10 @@ type Props = {
     readonly engaged: readonly string[];
     readonly tokens: ReadonlyMap<string, [number, number]>;
   } | null;
+  ctrlKey: boolean;
 };
 
-export default function OpponentBoard({ player }: Props) {
+export default function OpponentBoard({ player, ctrlKey }: Props) {
   console.log({ player });
 
   const tokens = Object.fromEntries(player?.tokens?.entries() ?? []);
@@ -37,6 +38,7 @@ export default function OpponentBoard({ player }: Props) {
       <summary>
         <details>
           <Cards
+            ctrlKey={ctrlKey}
             cards={player?.exile ?? []}
             show={true}
             field={"graveyard"}
@@ -68,6 +70,7 @@ export default function OpponentBoard({ player }: Props) {
       <summary>
         <details>
           <Cards
+            ctrlKey={ctrlKey}
             cards={player?.graveyard ?? []}
             show={true}
             field={"graveyard"}
@@ -97,6 +100,7 @@ export default function OpponentBoard({ player }: Props) {
 
       <p className="text-xl font-extrabold">battlefield</p>
       <Cards
+        ctrlKey={ctrlKey}
         cards={player?.battlefield ?? []}
         show={true}
         field={"battlefield"}
