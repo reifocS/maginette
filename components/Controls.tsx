@@ -45,7 +45,8 @@ export default function Controls({
   const undo = useUndo();
   const redo = useRedo();
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex gap-3 flex-wrap items-center p-2">
+      <p className="font-extrabold">ctrl key to see card in large</p>
       <button
         className={buttonClassname}
         disabled={deck.length === 0}
@@ -53,7 +54,11 @@ export default function Controls({
       >
         draw ({deck.length} left)
       </button>
-      <button className={buttonClassname} disabled={deck.length === 0} onClick={onShuffle}>
+      <button
+        className={buttonClassname}
+        disabled={deck.length === 0}
+        onClick={onShuffle}
+      >
         Shuffle
       </button>
       <button className={buttonClassname} onClick={desengageAll}>
@@ -69,7 +74,7 @@ export default function Controls({
         redo
       </button>
       <form
-      className="flex gap-1"
+        className="flex gap-1"
         onSubmit={(e) => {
           e.preventDefault();
           const target = e.target as typeof e.target & {
@@ -108,9 +113,6 @@ export default function Controls({
         ></input>
         pv
       </div>
-      <p className="font-extrabold">
-        Shortcuts: shift+click to engage, ctrl+hover on card to view in large, drag to opponents board to send to battlefield, ctrl click to send from battlefield to graveyard
-      </p>
     </div>
   );
 }

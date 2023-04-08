@@ -99,12 +99,18 @@ export default function Card({
       setContextMenuPosition({ x: event.pageX, y: event.pageY });
     },
 
-    onClick: ({ shiftKey, ctrlKey }) => {
+    onClick: ({ shiftKey, ctrlKey, altKey }) => {
       if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
       if (field === "battlefield" && !isOpponent && ctrlKey) {
         sendCardTo(field, "graveyard", card as any);
+      }
+      if (field === "battlefield" && !isOpponent && altKey) {
+        sendCardTo(field, "exile", card as any);
+      }
+      if (field === "hand" && !isOpponent && shiftKey) {
+        sendCardTo(field, "battlefield", card as any);
       }
     },
 

@@ -32,7 +32,7 @@ export default function PlayerBoard({
 }: PlayerBoardProps) {
   return (
     <>
-      <p className="text-xl font-extrabold">Battlefield</p>
+      <p className="text-xl font-extrabold">Battlefield <span className="font-normal text-sm">ctrl + click: graveyard, shift+click: engage</span></p> 
       <Cards
         cards={battlefield}
         show={true}
@@ -44,7 +44,7 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         ctrlKey={ctrlKey}
       />
-      <p className="text-xl font-extrabold">Hand</p>
+      <p className="text-xl font-extrabold">Hand <span className="font-normal text-sm">drag to opponents board or shift click to send to battlefield</span></p>
       <Cards
         cards={hand}
         show={true}
