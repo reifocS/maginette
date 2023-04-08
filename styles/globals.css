@@ -126,6 +126,18 @@ kbd {
   word-break: keep-all;
 }
 
+.battlefield {
+  transition: all 0.3s ease-in-out;
+}
+
+.battlefield>.card:first-child {
+  margin-top: 0; 
+}
+
+.battlefield>.card:not(:first-child) {
+  margin-top: -180px; 
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

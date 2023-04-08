@@ -1,7 +1,7 @@
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import Card from "./Card";
 
-type PropsCards = {
+export type PropsCards = {
   cards: Datum[] | CardFromLiveList;
   show: boolean;
   field: Fields;

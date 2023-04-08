@@ -158,8 +158,8 @@ export type OpponentCard = {
     readonly image_uris: {
         readonly normal: string;
         readonly large: string;
-
     };
+    readonly produced_mana?: string[];
 }
 
 

@@ -1,5 +1,6 @@
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import Cards from "./Cards";
+import Battlefield from "./Battlefield";
 
 type PlayerBoardProps = {
   hand: CardFromLiveList;
@@ -37,8 +38,7 @@ export default function PlayerBoard({
   return (
     <>
       <p className="text-xl font-extrabold">Battlefield</p>
-
-      <Cards
+      <Battlefield
         cards={groupByName(battlefield)}
         show={true}
         field="battlefield"

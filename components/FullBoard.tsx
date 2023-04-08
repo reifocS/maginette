@@ -50,6 +50,7 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
             normal: d.image_uris?.normal,
             large: d.image_uris?.large,
           }),
+          produced_mana: (d as Datum).produced_mana,
           card_faces: new LiveList(
             d.card_faces?.map(
               (cf) =>
@@ -60,6 +61,7 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
                     normal: cf.image_uris.normal,
                     large: cf.image_uris.large,
                   }),
+                  produced_mana: cf.produced_mana
                 })
             )
           ),
@@ -210,9 +212,6 @@ export default function FullBoard({ player }: Props) {
 
   const [cardPositionKey, setCardPositionKey] = useState(1);
   const tokensMap = Object.fromEntries(tokens);
-
-  //TODO move this data select to onSuccess cb of usequery
-  useEffect(() => {}, [data, memoAmount, deck, setDeck]);
 
   function onShuffle() {
     setDeck(shuffle(deck));

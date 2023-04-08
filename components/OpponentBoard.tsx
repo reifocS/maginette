@@ -1,5 +1,6 @@
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import Cards from "./Cards";
+import Battlefield from "./Battlefield";
 
 type Props = {
   player: {
@@ -16,7 +17,6 @@ type Props = {
 };
 
 export default function OpponentBoard({ player, ctrlKey }: Props) {
-  console.log({ player });
 
   const tokens = Object.fromEntries(player?.tokens?.entries() ?? []);
   return (
@@ -99,7 +99,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
       </summary>
 
       <p className="text-xl font-extrabold">battlefield</p>
-      <Cards
+      <Battlefield
         ctrlKey={ctrlKey}
         cards={player?.battlefield ?? []}
         show={true}
