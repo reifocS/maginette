@@ -104,6 +104,20 @@ a {
   text-decoration: none;
 }
 
+.card {
+  touch-action: none;
+  pointer-events: none;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3); /* Subtle drop shadow */
+  transition: all 0.3s ease-in-out;
+}
+
+.card:last-child {
+  margin-right: 0; /* Remove margin on last card of each line */
+}
+
+.card:not(:last-child) {
+  margin-right: -75px; /* Half of card width to overlap cards */
+}
 
 @media (prefers-color-scheme: dark) {
   html {

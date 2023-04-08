@@ -3,6 +3,7 @@ import { useGesture } from "@use-gesture/react";
 import { useState, useRef } from "react";
 import CustomContextMenu from "./ContextMenu";
 import { useMyPresence, useOthers } from "@/liveblocks.config";
+import { createPortal } from "react-dom";
 
 type PropsCard = {
   card: Datum | OpponentCard;
@@ -19,7 +20,7 @@ type PropsCard = {
 };
 
 let zIndex = 1;
-const gridSize = 30;
+const gridSize = 10;
 export default function Card({
   card,
   show = true,
@@ -124,6 +125,7 @@ export default function Card({
           zIndex: z.current,
           position: "relative",
           border: isLastPlayed ? "1px solid red" : "",
+          pointerEvents: "all"
         }}
         {...bind()}
       >
@@ -142,7 +144,7 @@ export default function Card({
         )}
       </div>
       {!isOpponent && contextMenuPosition && (
-        <CustomContextMenu
+        createPortal(<CustomContextMenu
           field={field}
           onEngaged={() => {
             engageCard(card.id, !isEngaged);
@@ -156,7 +158,7 @@ export default function Card({
           sendCardTo={sendCardTo}
           card={card as Datum}
           addToken={addToken}
-        />
+        />, document.getElementsByTagName("body")[0]!)
       )}
     </>
   );

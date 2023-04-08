@@ -26,9 +26,9 @@ export default function Cards({
   tokensMap
 }: PropsCards) {
   return (
-    <ul className="flex gap-3 flex-wrap">
+    <ul className="flex flex-wrap z-auto">
       {cards.map((v) => (
-        <li key={v.id}>
+        <li key={v.id} className="card">
           <Card
             card={v}
             field={field}
