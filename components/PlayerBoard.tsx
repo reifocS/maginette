@@ -17,6 +17,10 @@ type PlayerBoardProps = {
   ctrlKey: boolean;
 };
 
+function groupByName(cards: CardFromLiveList) {
+  return [...cards].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export default function PlayerBoard({
   sendCardTo,
   graveyard,
@@ -34,7 +38,7 @@ export default function PlayerBoard({
     <>
       <p className="text-xl font-extrabold">Battlefield <span className="font-normal text-sm">ctrl + click: graveyard, shift+click: engage, alt+click: exile</span></p> 
       <Cards
-        cards={battlefield}
+        cards={groupByName(battlefield)}
         show={true}
         field="battlefield"
         engaged={engaged}
