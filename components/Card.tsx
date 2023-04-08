@@ -53,6 +53,7 @@ export default function Card({
   const isEngaged = engaged.find((c) => c === card.id);
 
   useEffect(() => {
+    //Todo pass ref down from props instead
     opponentBoardRef.current = document.getElementById("player_board");
   }, []);
 
