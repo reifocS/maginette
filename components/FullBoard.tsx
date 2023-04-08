@@ -5,7 +5,12 @@ import { generateRandomID, shuffle } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";
-import { useStorage, useMutation, useBatch } from "@/liveblocks.config";
+import {
+  useStorage,
+  useMutation,
+  useBatch,
+  useMyPresence,
+} from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
 import { useRouter } from "next/router";
@@ -58,29 +63,29 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
   );
 }
 
-function dataToLiveObject(
-  hand: Datum[],
-  graveyard: Datum[],
-  exile: Datum[],
-  engaged: string[],
-  battlefield: Datum[],
-  data?: Datum[],
-  related?: Datum[],
-  life?: number,
-  tokens?: [string, [number, number]][]
-) {
-  return new LiveObject({
-    deck: dataToLiveList(data),
-    related: dataToLiveList(related),
-    hand: dataToLiveList(hand),
-    graveyard: dataToLiveList(graveyard),
-    exile: dataToLiveList(exile),
-    engaged: new LiveList(engaged),
-    battlefield: dataToLiveList(battlefield),
-    life: life!,
-    tokens: new LiveMap(tokens),
-  });
-}
+// function dataToLiveObject(
+//   hand: Datum[],
+//   graveyard: Datum[],
+//   exile: Datum[],
+//   engaged: string[],
+//   battlefield: Datum[],
+//   data?: Datum[],
+//   related?: Datum[],
+//   life?: number,
+//   tokens?: [string, [number, number]][]
+// ) {
+//   return new LiveObject({
+//     deck: dataToLiveList(data),
+//     related: dataToLiveList(related),
+//     hand: dataToLiveList(hand),
+//     graveyard: dataToLiveList(graveyard),
+//     exile: dataToLiveList(exile),
+//     engaged: new LiveList(engaged),
+//     battlefield: dataToLiveList(battlefield),
+//     life: life!,
+//     tokens: new LiveMap(tokens),
+//   });
+// }
 
 export default function FullBoard({ player }: Props) {
   const queryClient = useQueryClient();
@@ -131,28 +136,19 @@ export default function FullBoard({ player }: Props) {
   const exile = currentPlayer?.exile ?? [];
   const related = currentPlayer?.related ?? [];
   const batch = useBatch();
-
+  const [, updateMyPresence] = useMyPresence();
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
 
-  const setDeck = useMutation(
-    ({ storage }, deck: CardFromLiveList) => {
-      storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
-    },
-    []
-  );
-  const setHand = useMutation(
-    ({ storage }, hand: CardFromLiveList) => {
-      storage.get(currentPlayerId)?.set("hand", dataToLiveList(hand));
-    },
-    []
-  );
+  const setDeck = useMutation(({ storage }, deck: CardFromLiveList) => {
+    storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
+  }, []);
+  const setHand = useMutation(({ storage }, hand: CardFromLiveList) => {
+    storage.get(currentPlayerId)?.set("hand", dataToLiveList(hand));
+  }, []);
 
-  const setEngaged = useMutation(
-    ({ storage }, engaged: string[]) => {
-      storage.get(currentPlayerId)?.set("engaged", new LiveList(engaged));
-    },
-    []
-  );
+  const setEngaged = useMutation(({ storage }, engaged: string[]) => {
+    storage.get(currentPlayerId)?.set("engaged", new LiveList(engaged));
+  }, []);
 
   const setBattlefield = useMutation(
     ({ storage }, battlefield: CardFromLiveList) => {
@@ -170,25 +166,18 @@ export default function FullBoard({ player }: Props) {
     []
   );
 
-  const setExile = useMutation(
-    ({ storage }, exile: CardFromLiveList) => {
-      storage.get(currentPlayerId)?.set("exile", dataToLiveList(exile));
-    },
-    []
-  );
+  const setExile = useMutation(({ storage }, exile: CardFromLiveList) => {
+    storage.get(currentPlayerId)?.set("exile", dataToLiveList(exile));
+  }, []);
   const setTokens = useMutation(
     ({ storage }, tokens: [string, [number, number]][]) => {
       storage.get(currentPlayerId)?.set("tokens", new LiveMap(tokens));
     },
     []
   );
-  const setRelated = useMutation(
-    // Note the second argument
-    ({ storage }, related: CardFromLiveList) => {
-      storage.get(currentPlayerId)?.set("related", dataToLiveList(related));
-    },
-    []
-  );
+  const setRelated = useMutation(({ storage }, related: CardFromLiveList) => {
+    storage.get(currentPlayerId)?.set("related", dataToLiveList(related));
+  }, []);
 
   useEffect(() => {
     if (relatedCards) {
@@ -250,6 +239,8 @@ export default function FullBoard({ player }: Props) {
       const toStateSetter = mappingFieldToStateSetter[to];
       const fromState = mappingFieldToLiveState[from];
       const toState = mappingFieldToLiveState[to];
+      console.log({from, to, card, fromState, toState})
+
       if (to === "deck") {
         if (!payload)
           throw new Error("Payload missing when sending card to deck");
@@ -259,14 +250,20 @@ export default function FullBoard({ player }: Props) {
           setDeck([...deck, card]);
         }
         if (from !== "tokens") {
-          fromStateSetter(deck.filter((c) => c.id !== card.id));
+          fromStateSetter(fromState.filter((c) => c.id !== card.id));
         }
         return;
       }
       if (from !== "tokens") {
         fromStateSetter(fromState.filter((c) => c.id !== card.id));
       }
-      toStateSetter([...toState, { ...card, id: generateRandomID() }]);
+      const id = generateRandomID();
+      if (to === "battlefield") {
+        updateMyPresence({ lastPlayedCard: id });
+      } else {
+        updateMyPresence({ lastPlayedCard: null });
+      }
+      toStateSetter([...toState, { ...card, id }]);
     });
   }
 
@@ -302,7 +299,7 @@ export default function FullBoard({ player }: Props) {
 
   return (
     <>
-     {isLoading && fetchStatus !== "idle" && (
+      {isLoading && fetchStatus !== "idle" && (
         <div
           style={{
             borderTopColor: "transparent",
@@ -355,7 +352,6 @@ export default function FullBoard({ player }: Props) {
             <button>Create deck</button>
           </form>
         ))}
-     
       {deck && deck.length > 0 && (
         <>
           <h1 className="font-extrabold text-center">Opponent</h1>

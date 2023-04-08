@@ -2,6 +2,7 @@ import { Datum, Fields, OpponentCard, Point } from "@/types";
 import { useGesture } from "@use-gesture/react";
 import { useState, useRef } from "react";
 import CustomContextMenu from "./ContextMenu";
+import { useMyPresence, useOthers } from "@/liveblocks.config";
 
 type PropsCard = {
   card: Datum | OpponentCard;
@@ -37,6 +38,12 @@ export default function Card({
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
     null
   );
+  const [myPresence] = useMyPresence();
+  const other = useOthers((others) =>
+    others.find((o) => o.presence.lastPlayedCard)
+  );
+  const otherPlayedCard = other?.presence.lastPlayedCard;
+
   const isEngaged = engaged.find((c) => c === card.id);
 
   const hasToken = tokensMap[card.id] !== undefined;
@@ -81,6 +88,11 @@ export default function Card({
     setContextMenuPosition(null);
   };
 
+  const { lastPlayedCard } = myPresence;
+
+  const isLastPlayed =
+    (lastPlayedCard && card.id === lastPlayedCard) ||
+    otherPlayedCard === card.id;
   let src = card;
   if (card.card_faces && card.card_faces.length > 0) {
     src = card.card_faces![index];
@@ -111,6 +123,7 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
+          border: isLastPlayed ? "1px solid red" : "",
         }}
         {...bind()}
       >

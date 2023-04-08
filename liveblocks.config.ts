@@ -3,7 +3,7 @@ import { createRoomContext } from "@liveblocks/react";
 
 
 type Presence = {
-    lastPlayedCard: number | null,
+    lastPlayedCard: string | null,
     // ...
 };
 
@@ -40,5 +40,5 @@ const client = createClient({
 
 
 export const {
-    suspense: { RoomProvider, useStorage, useMutation, useUndo, useCanRedo, useCanUndo, useRedo, useBatch },
+    suspense: { RoomProvider, useStorage, useMutation, useUndo, useCanRedo, useCanUndo, useRedo, useBatch, useMyPresence, useOthers },
 } = createRoomContext<Presence, Storage>(client);
