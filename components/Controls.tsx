@@ -109,7 +109,7 @@ export default function Controls({
         pv
       </div>
       <p className="font-extrabold">
-        Shortcuts: shift+click to engage, ctrl+hover on card to view in large, drag to opponents board to send to battlefield
+        Shortcuts: shift+click to engage, ctrl+hover on card to view in large, drag to opponents board to send to battlefield, ctrl click to send from battlefield to graveyard
       </p>
     </div>
   );

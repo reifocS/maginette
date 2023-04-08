@@ -259,7 +259,6 @@ export default function FullBoard({ player }: Props) {
       const toStateSetter = mappingFieldToStateSetter[to];
       const fromState = mappingFieldToLiveState[from];
       const toState = mappingFieldToLiveState[to];
-      console.log({ from, to, card, fromState, toState });
 
       if (to === "deck") {
         if (!payload)

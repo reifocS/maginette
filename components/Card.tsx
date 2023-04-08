@@ -99,10 +99,13 @@ export default function Card({
       setContextMenuPosition({ x: event.pageX, y: event.pageY });
     },
 
-    onClick: ({ shiftKey }) => {
+    onClick: ({ shiftKey, ctrlKey }) => {
       if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
+      if (field === "battlefield" && !isOpponent && ctrlKey) {
+        sendCardTo(field, "graveyard", card as any);
+      }
     },
 
     onDragEnd: ({ xy }) => {
@@ -179,9 +182,10 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
-          boxShadow: isHoverOpponentBoard || isLastPlayed
-            ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
-            : "",
+          boxShadow:
+            isHoverOpponentBoard || isLastPlayed
+              ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
+              : "",
         }}
         {...bind()}
       >
