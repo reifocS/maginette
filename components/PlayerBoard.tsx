@@ -32,7 +32,7 @@ export default function PlayerBoard({
 }: PlayerBoardProps) {
   return (
     <>
-      <p className="text-xl font-extrabold">Battlefield <span className="font-normal text-sm">ctrl + click: graveyard, shift+click: engage</span></p> 
+      <p className="text-xl font-extrabold">Battlefield <span className="font-normal text-sm">ctrl + click: graveyard, shift+click: engage, alt+click: exile</span></p> 
       <Cards
         cards={battlefield}
         show={true}
