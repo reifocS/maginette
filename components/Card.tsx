@@ -74,8 +74,8 @@ export default function Card({
       setContextMenuPosition({ x: event.pageX, y: event.pageY });
     },
 
-    onDoubleClick: ({}) => {
-      if (field === "battlefield" && !isOpponent)
+    onClick: ({shiftKey}) => {
+      if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
     },
@@ -150,7 +150,6 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
-          opacity: isHover ? 0.5 : 1,
           border: isLastPlayed ? "1px solid red" : "",
         }}
         {...bind()}
