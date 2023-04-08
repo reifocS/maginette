@@ -46,11 +46,12 @@ export default function Controls({
   const redo = useRedo();
   return (
     <div className="flex gap-3 flex-wrap items-center p-2">
-       <div className="font-normal shortcut_container">
+      <div className="font-normal shortcut_container">
         Zoom with
         <kbd>Ctrl</kbd>
         <kbd>click</kbd>
-        </div>
+      </div>
+      View all actions with <kbd>left click</kbd>
       <button
         className={buttonClassname}
         disabled={deck.length === 0}
