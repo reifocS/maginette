@@ -48,8 +48,8 @@ export default function Controls({
     <div className="flex gap-3 flex-wrap items-center p-2">
       <div className="font-normal shortcut_container">
         Zoom with
-        <kbd>Ctrl</kbd>
-        <kbd>click</kbd>
+        <kbd>ctrl</kbd>
+        <kbd>hover</kbd>
       </div>
       View all actions with <kbd>left click</kbd>
       <button
