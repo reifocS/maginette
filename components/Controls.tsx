@@ -45,84 +45,29 @@ export default function Controls({
   const undo = useUndo();
   const redo = useRedo();
   return (
-    <div className="flex gap-3 flex-wrap items-center p-2">
-      <div className="font-normal shortcut_container">
-        Zoom with
-        <kbd>ctrl</kbd>
-        <kbd>hover</kbd>
-      </div>
-      View all actions with <kbd>left click</kbd>
-      <button
-        className={buttonClassname}
-        disabled={deck.length === 0}
-        onClick={draw}
-      >
-        draw ({deck.length} left)
-      </button>
-      <button
-        className={buttonClassname}
-        disabled={deck.length === 0}
-        onClick={onShuffle}
-      >
-        Shuffle
-      </button>
-      <button className={buttonClassname} onClick={desengageAll}>
-        Desengage all
-      </button>
-      <button className={buttonClassname} onClick={resetPosition}>
-        Reset all position
-      </button>
-      <button className={buttonClassname} disabled={!canUndo} onClick={undo}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
+    <>
+      <div className="flex gap-3 flex-wrap items-center p-2">
+        <button
+          className={buttonClassname}
+          disabled={deck.length === 0}
+          onClick={draw}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
-          />
-        </svg>
-      </button>
-      <button className={buttonClassname} disabled={!canRedo} onClick={redo}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6"
+          draw ({deck.length} left)
+        </button>
+        <button
+          className={buttonClassname}
+          disabled={deck.length === 0}
+          onClick={onShuffle}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"
-          />
-        </svg>
-      </button>
-      <form
-        className="flex gap-1"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const target = e.target as typeof e.target & {
-            card_name: {
-              value: string;
-            };
-          };
-          searchCard(target.card_name.value);
-        }}
-      >
-        <input
-          id="card_name"
-          name="card_name"
-          required
-          placeholder="card name"
-        ></input>
-        <button className={buttonClassname}>
+          Shuffle
+        </button>
+        <button className={buttonClassname} onClick={desengageAll}>
+          Desengage all
+        </button>
+        <button className={buttonClassname} onClick={resetPosition}>
+          Reset positions
+        </button>
+        <button className={buttonClassname} title="undo" disabled={!canUndo} onClick={undo}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -134,31 +79,91 @@ export default function Controls({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"
             />
           </svg>
         </button>
-      </form>
-      <div className="flex items-center gap-2">
-        P1{" "}
-        <input
-          className="w-[60px]"
-          type={"number"}
-          onChange={(e) => mutatePlayerOneLife(+e.target.value)}
-          value={playerOneLife}
-        ></input>
-        pv /{" "}
+        <button className={buttonClassname} title="redo" disabled={!canRedo} onClick={redo}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"
+            />
+          </svg>
+        </button>
+        <form
+          className="flex gap-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const target = e.target as typeof e.target & {
+              card_name: {
+                value: string;
+              };
+            };
+            searchCard(target.card_name.value);
+          }}
+        >
+          <input
+            id="card_name"
+            name="card_name"
+            required
+            placeholder="card name"
+          ></input>
+          <button title="find in deck" className={buttonClassname}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </button>
+        </form>
+        <div className="flex items-center gap-2">
+          P1{" "}
+          <input
+            className="w-[60px]"
+            type={"number"}
+            onChange={(e) => mutatePlayerOneLife(+e.target.value)}
+            value={playerOneLife}
+          ></input>
+          pv /{" "}
+        </div>
+        <div className="flex items-center gap-2">
+          P2{" "}
+          <input
+            className="w-[60px]"
+            type={"number"}
+            onChange={(e) => mutatePlayerTwoLife(+e.target.value)}
+            value={playerTwoLife}
+          ></input>
+          pv
+        </div>
       </div>
       <div className="flex items-center gap-2">
-        P2{" "}
-        <input
-          className="w-[60px]"
-          type={"number"}
-          onChange={(e) => mutatePlayerTwoLife(+e.target.value)}
-          value={playerTwoLife}
-        ></input>
-        pv
+      <div className="font-normal shortcut_container">
+        Zoom with
+        <kbd>ctrl</kbd>
+        <kbd>hover</kbd>
       </div>
-    </div>
+      View actions with <kbd>left click</kbd>
+      </div>
+     
+    </>
   );
 }

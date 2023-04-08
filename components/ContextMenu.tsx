@@ -1,5 +1,73 @@
 import { Fields, Datum } from "@/types";
 import { useRef, useEffect, Fragment, useState } from "react";
+("");
+
+type Action = "engage/desengage" | Fields;
+
+function getShortcut(currentField: Fields, action: Action) {
+  switch (currentField) {
+    case "battlefield":
+      switch (action) {
+        case "engage/desengage":
+          return (
+            <>
+              <kbd>shift</kbd>
+              <kbd>click</kbd>
+            </>
+          );
+        case "graveyard":
+          return (
+            <>
+              <kbd>ctrl</kbd>
+              <kbd>click</kbd>
+            </>
+          );
+        case "exile":
+          return (
+            <>
+              <kbd>alt</kbd>
+              <kbd>click</kbd>
+            </>
+          );
+        case "hand":
+        case "deck":
+        case "tokens":
+        case "battlefield":
+          return null;
+      }
+
+    case "graveyard":
+      return null;
+    case "exile":
+      return null;
+    case "hand":
+      switch (action) {
+        case "battlefield":
+          return (
+            <>
+              <kbd>shift</kbd>
+              <kbd>click</kbd>
+            </>
+          );
+        default:
+          return null;
+      }
+    case "deck":
+      throw new Error("should never happen");
+    case "tokens":
+      switch (action) {
+        case "battlefield":
+          return (
+            <>
+              <kbd>shift</kbd>
+              <kbd>click</kbd>
+            </>
+          );
+        default:
+          return null;
+      }
+  }
+}
 
 export const fields: Fields[] = [
   "battlefield",
@@ -103,12 +171,16 @@ const CustomContextMenu = ({
                   sendCardTo(field, f, card);
                 }}
               >
-                Send to {f}
+                <div className="shortcut_container">
+                  {f} {getShortcut(field, f)}
+                </div>
               </li>
             );
           })}
         <li className={className} onClick={onEngaged}>
-          Engage/Desengage
+          <div className="shortcut_container">
+            Engage/Desengage {getShortcut(field, "engage/desengage")}
+          </div>
         </li>
         <li className={className} onClick={onSwapped}>
           Swap face

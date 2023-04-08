@@ -36,12 +36,8 @@ export default function PlayerBoard({
 }: PlayerBoardProps) {
   return (
     <>
-      <div className="font-normal shortcut_container">
-        <b className="text-xl">Battlefield</b> <kbd>ctrl</kbd> <kbd>click</kbd>
-        graveyard<kbd>shift</kbd>
-        <kbd>click</kbd>engage <kbd>alt</kbd>
-        <kbd>click</kbd>exile
-      </div>
+      <p className="text-xl font-extrabold">Battlefield</p>
+
       <Cards
         cards={groupByName(battlefield)}
         show={true}
@@ -53,10 +49,7 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         ctrlKey={ctrlKey}
       />
-      <div className="font-normal shortcut_container">
-        <b className="text-xl">Hand</b> <kbd>shift</kbd> <kbd>click</kbd>
-        battlefield
-      </div>
+      <p className="text-xl font-extrabold">Hand</p>
       <Cards
         cards={hand}
         show={true}
@@ -103,10 +96,7 @@ export default function PlayerBoard({
         </details>
       </summary>
 
-      <div className="font-normal shortcut_container">
-        <b className="text-xl">Tokens</b> <kbd>shift</kbd> <kbd>click</kbd>
-        battlefield
-      </div>
+      <p className="text-xl font-extrabold">Token card</p>
       <summary>
         <details>
           <Cards
