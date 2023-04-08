@@ -21,13 +21,16 @@ const getCards = async (names: string[]) => {
     return response.json();
 };
 
-function useCards(names: string[]) {
+function useCards(names: string[], onDataFetched: (data: Datum[]) => void) {
     // Queries
     return useQuery<CardCollection, Error, Datum[]>({
         queryKey: ["decks", names],
         queryFn: () => getCards(names),
         onError: (err) => {
             console.error(err.message);
+        },
+        onSuccess: (data) => {
+            onDataFetched(data);
         },
         staleTime: Number.POSITIVE_INFINITY,
         enabled: names.length > 0,

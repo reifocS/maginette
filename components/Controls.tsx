@@ -53,7 +53,7 @@ export default function Controls({
       >
         draw ({deck.length} left)
       </button>
-      <button className={buttonClassname} onClick={onShuffle}>
+      <button className={buttonClassname} disabled={deck.length === 0} onClick={onShuffle}>
         Shuffle
       </button>
       <button className={buttonClassname} onClick={desengageAll}>

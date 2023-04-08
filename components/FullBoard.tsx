@@ -93,15 +93,14 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
 // }
 
 export default function FullBoard({ player }: Props) {
-  const queryClient = useQueryClient();
 
   const [deckFromText, setDeckFromText] = useState("");
   const { data, isLoading, fetchStatus } = useCards(
-    Array.from(processRawText(deckFromText))
+    Array.from(processRawText(deckFromText)),
+    onDeckDataFetched
   );
   const ctlrKey: boolean = useKeyPress("Control");
 
-  console.log(ctlrKey);
   const playerOne = useStorage((root) => root.playerOne);
   const playerTwo = useStorage((root) => root.playerTwo);
 
@@ -116,7 +115,7 @@ export default function FullBoard({ player }: Props) {
       ?.filter((v) => v.all_parts && v.all_parts.length > 0)
       .flatMap((v) => v.all_parts) ?? [];
 
-  const { data: relatedCards } = useCards(
+  const relatedQuery = useCards(
     Array.from(
       new Set(
         allParts.map((v) => {
@@ -127,7 +126,8 @@ export default function FullBoard({ player }: Props) {
           return v.name;
         })
       )
-    )
+    ),
+    onDeckRelatedFetched
   );
   const memoAmount = useMemo(
     () => processCardWithTheirAmount(deckFromText),
@@ -145,6 +145,28 @@ export default function FullBoard({ player }: Props) {
   const batch = useBatch();
   const [, updateMyPresence] = useMyPresence();
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
+
+  function onDeckDataFetched(data: Datum[]) {
+    let d = [];
+    for (const card of data) {
+      const amountInDeckToAdd = Number(
+        //Support double faced card
+        memoAmount.get(card.name.split("//")[0].trim())
+      );
+      for (let i = 0; i < amountInDeckToAdd; ++i) {
+        d.push({ ...card, id: card.id + "-" + i });
+      }
+    }
+    setDeck(shuffle(d));
+  }
+
+  function onDeckRelatedFetched(data: Datum[]) {
+    if (data) {
+      setRelated(data);
+      //Hack to clear history
+      location.reload();
+    }
+  }
 
   const setDeck = useMutation(({ storage }, deck: CardFromLiveList) => {
     storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
@@ -186,32 +208,11 @@ export default function FullBoard({ player }: Props) {
     storage.get(currentPlayerId)?.set("related", dataToLiveList(related));
   }, []);
 
-  useEffect(() => {
-    if (relatedCards) {
-      setRelated(relatedCards);
-    }
-  }, [setRelated, relatedCards]);
-
   const [cardPositionKey, setCardPositionKey] = useState(1);
   const tokensMap = Object.fromEntries(tokens);
 
   //TODO move this data select to onSuccess cb of usequery
-  useEffect(() => {
-    if (!data || deck.length > 0) {
-      return;
-    }
-    let d = [];
-    for (const card of data) {
-      const amountInDeckToAdd = Number(
-        //Support double faced card
-        memoAmount.get(card.name.split("//")[0].trim())
-      );
-      for (let i = 0; i < amountInDeckToAdd; ++i) {
-        d.push({ ...card, id: card.id + "-" + i });
-      }
-    }
-    setDeck(shuffle(d));
-  }, [data, memoAmount, deck, setDeck]);
+  useEffect(() => {}, [data, memoAmount, deck, setDeck]);
 
   function onShuffle() {
     setDeck(shuffle(deck));
@@ -287,7 +288,7 @@ export default function FullBoard({ player }: Props) {
   }
 
   function onReset() {
-    queryClient.resetQueries();
+    //queryClient.resetQueries();
   }
 
   function addToken(cardId: string, values: [number, number]) {
@@ -314,7 +315,12 @@ export default function FullBoard({ player }: Props) {
     });
   }
 
-  console.log({ deck, data });
+  const gameStarted =
+    deck.length > 0 ||
+    battlefield.length > 0 ||
+    graveyard.length > 0 ||
+    exile.length > 0 ||
+    hand.length > 0;
 
   return (
     <>
@@ -327,25 +333,24 @@ export default function FullBoard({ player }: Props) {
         ></div>
       )}
       room id: {room}
-      {deck === undefined ||
-        (deck.length === 0 && (
-          <form
-            className={`${"flex flex-col grow-0 items-center content-center"}`}
-            onSubmit={(e) => {
-              e.preventDefault();
-              const target = e.target as typeof e.target & {
-                cards: { value: string };
-              };
-              setDeckFromText(target.cards.value);
-            }}
-          >
-            <label htmlFor="cards">Paste deck here</label>
-            <textarea
-              name="cards"
-              id="cards"
-              cols={30}
-              rows={10}
-              defaultValue={`
+      {!gameStarted && (
+        <form
+          className={`${"flex flex-col grow-0 items-center content-center"}`}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const target = e.target as typeof e.target & {
+              cards: { value: string };
+            };
+            setDeckFromText(target.cards.value);
+          }}
+        >
+          <label htmlFor="cards">Paste deck here</label>
+          <textarea
+            name="cards"
+            id="cards"
+            cols={30}
+            rows={10}
+            defaultValue={`
 3 Ambitious Farmhand
 4 Reckoner Bankbuster
 2 Elspeth Resplendent
@@ -367,11 +372,11 @@ export default function FullBoard({ player }: Props) {
 3 Farewell
 4 Sunset Revelry
 3 Loran of the Third Path`}
-            ></textarea>
-            <button>Create deck</button>
-          </form>
-        ))}
-      {deck && deck.length > 0 && (
+          ></textarea>
+          <button>Create deck</button>
+        </form>
+      )}
+      {(gameStarted) && (
         <>
           <h1 className="font-extrabold text-center">Opponent</h1>
           <div className="flex flex-col gap-4" key={cardPositionKey}>
