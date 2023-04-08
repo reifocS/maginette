@@ -53,12 +53,10 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         ctrlKey={ctrlKey}
       />
-      <p className="text-xl font-extrabold">
-        Hand{" "}
-        <span className="font-normal text-sm">
-          drag to opponents board or shift click to send to battlefield
-        </span>
-      </p>
+      <div className="font-normal shortcut_container">
+        <b className="text-xl">Hand</b> <kbd>shift</kbd> <kbd>click</kbd>
+        battlefield
+      </div>
       <Cards
         cards={hand}
         show={true}

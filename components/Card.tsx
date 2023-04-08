@@ -1,6 +1,6 @@
 import { Datum, Fields, OpponentCard, Point } from "@/types";
 import { useGesture } from "@use-gesture/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import CustomContextMenu from "./ContextMenu";
 import { useMyPresence, useOthers } from "@/liveblocks.config";
 import { createPortal } from "react-dom";
@@ -37,9 +37,7 @@ export default function Card({
   const [swap, setSwap] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHover, setIsHover] = useState(false);
-  const [isHoverOpponentBoard, setIsHoverOpponentBoard] = useState(false);
   const z = useRef(0);
-  const opponentBoardRef = useRef<HTMLElement | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
     null
@@ -51,11 +49,6 @@ export default function Card({
   const otherPlayedCard = other?.presence.lastPlayedCard;
 
   const isEngaged = engaged.find((c) => c === card.id);
-
-  useEffect(() => {
-    //Todo pass ref down from props instead
-    opponentBoardRef.current = document.getElementById("player_board");
-  });
 
   const hasToken = tokensMap[card.id] !== undefined;
 
@@ -74,24 +67,6 @@ export default function Card({
       const newX = Math.round(x / gridSize) * gridSize;
       const newY = Math.round(y / gridSize) * gridSize;
       setPosition({ x: newX, y: newY });
-
-      //Check if in opponent board
-      const containerDiv = opponentBoardRef.current;
-      const rect = containerDiv?.getBoundingClientRect();
-
-      const [absX, absY] = xy;
-      if (
-        rect &&
-        (absX < rect.left ||
-          absX > rect.right ||
-          absY < rect.top ||
-          absY > rect.bottom) &&
-        field !== "battlefield"
-      ) {
-        setIsHoverOpponentBoard(true);
-      } else {
-        setIsHoverOpponentBoard(false);
-      }
     },
     onContextMenu: ({ event }) => {
       if (!show || isOpponent) return;
@@ -113,19 +88,6 @@ export default function Card({
         sendCardTo(field, "battlefield", card as any);
       }
       if (field === "tokens" && !isOpponent && shiftKey) {
-        sendCardTo(field, "battlefield", card as any);
-      }
-    },
-
-    onDragEnd: ({ xy }) => {
-      const containerDiv = opponentBoardRef.current;
-      const rect = containerDiv?.getBoundingClientRect();
-      const [x, y] = xy;
-      if (
-        rect &&
-        (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) &&
-        field !== "battlefield"
-      ) {
         sendCardTo(field, "battlefield", card as any);
       }
     },
@@ -159,9 +121,7 @@ export default function Card({
 
   const transformStyle = `translate3d(${position.x}px, ${
     position.y
-  }px, 0) rotate(${isEngaged ? 90 : 0}deg) ${
-    isHoverOpponentBoard ? "scale(1.25)" : ""
-  }`;
+  }px, 0) rotate(${isEngaged ? 90 : 0}deg)`;
 
   return (
     <>
@@ -191,10 +151,9 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
-          boxShadow:
-            isHoverOpponentBoard || isLastPlayed
-              ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
-              : "",
+          boxShadow: isLastPlayed
+            ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
+            : "",
         }}
         {...bind()}
       >
