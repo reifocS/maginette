@@ -56,14 +56,12 @@ const Game = () => {
         fallback={
           <div
             style={{
-              color: "black",
               fontWeight: 600,
               height: "100vh",
               width: "100vw",
-              backgroundColor: "#87ceeb",
             }}
           >
-            Loading...
+            Preparing your deck...
           </div>
         }
       >

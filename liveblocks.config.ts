@@ -15,8 +15,8 @@ type LiveCard = LiveObject<{
         normal: string;
         large: string;
     }>;
+    produced_mana?: string[];
 }>;
-
 
 type GameData = LiveObject<{
     deck: LiveList<LiveCard>;

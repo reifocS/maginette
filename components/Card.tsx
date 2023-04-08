@@ -146,10 +146,11 @@ export default function Card({
         )}
       <div
         ref={ref}
+        className="card"
         style={{
           transform: transformStyle,
           touchAction: "none",
-          zIndex: z.current,
+          zIndex: isEngaged ? 0 : z.current,
           position: "relative",
           boxShadow: isLastPlayed
             ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
