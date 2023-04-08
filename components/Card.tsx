@@ -1,6 +1,6 @@
 import { Datum, Fields, OpponentCard, Point } from "@/types";
 import { useGesture } from "@use-gesture/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import CustomContextMenu from "./ContextMenu";
 import { useMyPresence, useOthers } from "@/liveblocks.config";
 import { createPortal } from "react-dom";
@@ -37,7 +37,9 @@ export default function Card({
   const [swap, setSwap] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHover, setIsHover] = useState(false);
+  const [isHoverOpponentBoard, setIsHoverOpponentBoard] = useState(false);
   const z = useRef(0);
+  const opponentBoardRef = useRef<HTMLElement | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
     null
@@ -49,6 +51,10 @@ export default function Card({
   const otherPlayedCard = other?.presence.lastPlayedCard;
 
   const isEngaged = engaged.find((c) => c === card.id);
+
+  useEffect(() => {
+    opponentBoardRef.current = document.getElementById("player_board");
+  }, []);
 
   const hasToken = tokensMap[card.id] !== undefined;
 
@@ -63,10 +69,28 @@ export default function Card({
     onMouseLeave: () => {
       setIsHover(false);
     },
-    onDrag: ({ offset: [x, y] }) => {
+    onDrag: ({ offset: [x, y], xy }) => {
       const newX = Math.round(x / gridSize) * gridSize;
       const newY = Math.round(y / gridSize) * gridSize;
       setPosition({ x: newX, y: newY });
+
+      //Check if in opponent board
+      const containerDiv = opponentBoardRef.current;
+      const rect = containerDiv?.getBoundingClientRect();
+
+      const [absX, absY] = xy;
+      if (
+        rect &&
+        (absX < rect.left ||
+          absX > rect.right ||
+          absY < rect.top ||
+          absY > rect.bottom) &&
+        field !== "battlefield"
+      ) {
+        setIsHoverOpponentBoard(true);
+      } else {
+        setIsHoverOpponentBoard(false);
+      }
     },
     onContextMenu: ({ event }) => {
       if (!show || isOpponent) return;
@@ -74,14 +98,14 @@ export default function Card({
       setContextMenuPosition({ x: event.pageX, y: event.pageY });
     },
 
-    onClick: ({shiftKey}) => {
+    onClick: ({ shiftKey }) => {
       if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
     },
 
     onDragEnd: ({ xy }) => {
-      const containerDiv = document.getElementById("player_board");
+      const containerDiv = opponentBoardRef.current;
       const rect = containerDiv?.getBoundingClientRect();
       const [x, y] = xy;
       if (
@@ -122,11 +146,14 @@ export default function Card({
 
   const transformStyle = `translate3d(${position.x}px, ${
     position.y
-  }px, 0) rotate(${isEngaged ? 90 : 0}deg)`;
+  }px, 0) rotate(${isEngaged ? 90 : 0}deg) ${
+    isHoverOpponentBoard ? "scale(1.25)" : ""
+  }`;
 
   return (
     <>
-      {isHover && ctrlKey && 
+      {isHover &&
+        ctrlKey &&
         createPortal(
           <div
             className="fixed top-4 right-8 z-[9999]"
@@ -134,7 +161,7 @@ export default function Card({
               pointerEvents: "none",
             }}
           >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               draggable={false}
               loading="eager"
@@ -151,7 +178,9 @@ export default function Card({
           touchAction: "none",
           zIndex: z.current,
           position: "relative",
-          border: isLastPlayed ? "1px solid red" : "",
+          boxShadow: isHoverOpponentBoard || isLastPlayed
+            ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
+            : "",
         }}
         {...bind()}
       >
