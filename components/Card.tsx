@@ -55,7 +55,7 @@ export default function Card({
   useEffect(() => {
     //Todo pass ref down from props instead
     opponentBoardRef.current = document.getElementById("player_board");
-  }, []);
+  });
 
   const hasToken = tokensMap[card.id] !== undefined;
 
