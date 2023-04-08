@@ -46,7 +46,11 @@ export default function Controls({
   const redo = useRedo();
   return (
     <div className="flex gap-3 flex-wrap items-center p-2">
-      <p className="font-extrabold">ctrl key to see card in large</p>
+       <div className="font-normal shortcut_container">
+        Zoom with
+        <kbd>Ctrl</kbd>
+        <kbd>click</kbd>
+        </div>
       <button
         className={buttonClassname}
         disabled={deck.length === 0}
