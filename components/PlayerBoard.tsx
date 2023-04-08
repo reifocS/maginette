@@ -32,11 +32,16 @@ export default function PlayerBoard({
   engageCard,
   engaged,
   tokensMap,
-  ctrlKey
+  ctrlKey,
 }: PlayerBoardProps) {
   return (
     <>
-      <p className="text-xl font-extrabold">Battlefield <span className="font-normal text-sm">ctrl + click: graveyard, shift+click: engage, alt+click: exile</span></p> 
+      <div className="font-normal shortcut_container">
+        <b className="text-xl">Battlefield</b> <kbd>ctrl</kbd> <kbd>click</kbd>
+        graveyard<kbd>shift</kbd>
+        <kbd>click</kbd>engage <kbd>alt</kbd>
+        <kbd>click</kbd>exile
+      </div>
       <Cards
         cards={groupByName(battlefield)}
         show={true}
@@ -48,7 +53,12 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         ctrlKey={ctrlKey}
       />
-      <p className="text-xl font-extrabold">Hand <span className="font-normal text-sm">drag to opponents board or shift click to send to battlefield</span></p>
+      <p className="text-xl font-extrabold">
+        Hand{" "}
+        <span className="font-normal text-sm">
+          drag to opponents board or shift click to send to battlefield
+        </span>
+      </p>
       <Cards
         cards={hand}
         show={true}
