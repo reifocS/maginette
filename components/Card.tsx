@@ -129,11 +129,12 @@ export default function Card({
       {isHover && ctrlKey && 
         createPortal(
           <div
-            className="fixed top-4 right-8"
+            className="fixed top-4 right-8 z-[9999]"
             style={{
               pointerEvents: "none",
             }}
           >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               draggable={false}
               loading="eager"
