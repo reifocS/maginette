@@ -98,7 +98,7 @@ export default function PlayerBoard({
 
       <p className="text-xl font-extrabold">Token card</p>
       <summary>
-        <details>
+        <details open>
           <Cards
             cards={tokens}
             show={true}
