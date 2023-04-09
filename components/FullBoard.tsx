@@ -41,32 +41,30 @@ type Props = {
 
 function dataToLiveList(data?: Datum[] | CardFromLiveList) {
   return new LiveList(
-    data?.map(
-      (d) =>
-        new LiveObject({
-          id: d.id,
-          name: d.name,
-          image_uris: new LiveObject({
-            normal: d.image_uris?.normal,
-            large: d.image_uris?.large,
-          }),
-          produced_mana: (d as Datum).produced_mana,
-          card_faces: new LiveList(
-            d.card_faces?.map(
-              (cf) =>
-                new LiveObject({
-                  name: cf.name,
-                  id: cf.id,
-                  image_uris: new LiveObject({
-                    normal: cf.image_uris.normal,
-                    large: cf.image_uris.large,
-                  }),
-                  produced_mana: cf.produced_mana
-                })
-            )
-          ),
-        })
-    )
+    data?.map((d) => {
+      return new LiveObject({
+        id: d.id,
+        name: d.name,
+        image_uris: new LiveObject({
+          normal: d.image_uris?.normal,
+          large: d.image_uris?.large,
+        }),
+        produced_mana: (d as Datum).produced_mana,
+        card_faces: new LiveList(
+          d.card_faces?.map((cf) => {
+            return new LiveObject({
+              name: cf.name,
+              id: cf.id,
+              image_uris: new LiveObject({
+                normal: cf.image_uris.normal,
+                large: cf.image_uris.large,
+              }),
+              produced_mana: cf.produced_mana,
+            });
+          })
+        ),
+      });
+    })
   );
 }
 
@@ -95,7 +93,6 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
 // }
 
 export default function FullBoard({ player }: Props) {
-
   const [deckFromText, setDeckFromText] = useState("");
   const { data, isLoading, fetchStatus } = useCards(
     Array.from(processRawText(deckFromText)),
@@ -166,7 +163,7 @@ export default function FullBoard({ player }: Props) {
     if (data) {
       setRelated(data);
       //Hack to clear history
-      location.reload();
+      // location.reload();
     }
   }
 
@@ -374,7 +371,7 @@ export default function FullBoard({ player }: Props) {
           <button>Create deck</button>
         </form>
       )}
-      {(gameStarted) && (
+      {gameStarted && (
         <>
           <h1 className="font-extrabold text-center">Opponent</h1>
           <div className="flex flex-col gap-4" key={cardPositionKey}>
