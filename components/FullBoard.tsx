@@ -345,12 +345,14 @@ export default function FullBoard({ player }: Props) {
   return (
     <>
       {isLoading && fetchStatus !== "idle" && (
-        <div
-          style={{
-            borderTopColor: "transparent",
-          }}
-          className="w-16 ml-2 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
-        ></div>
+        <div className="flex w-full items-center justify-center p-4">
+          <div
+            style={{
+              borderTopColor: "transparent",
+            }}
+            className="w-16 ml-2 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
+          ></div>
+        </div>
       )}
       room id: {room}
       {!gameStarted && (

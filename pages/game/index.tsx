@@ -3,6 +3,9 @@ import { ClientSideSuspense } from "@liveblocks/react";
 import { useRouter } from "next/router";
 import { RoomProvider } from "../../liveblocks.config";
 import FullBoard from "@/components/FullBoard";
+import Loading from "@/components/Loading";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "@/components/ErrorFallback";
 
 const Game = () => {
   const router = useRouter();
@@ -52,20 +55,12 @@ const Game = () => {
       }}
       initialPresence={{ lastPlayedCard: null }}
     >
-      <ClientSideSuspense
-        fallback={
-          <div
-            style={{
-              fontWeight: 600,
-              height: "100vh",
-              width: "100vw",
-            }}
-          >
-            Preparing your deck...
-          </div>
-        }
-      >
-        {() => <FullBoard player={Number(player)} />}
+      <ClientSideSuspense fallback={<Loading />}>
+        {() => (
+          <ErrorBoundary fallback={<ErrorFallback />}>
+            <FullBoard player={Number(player)} />
+          </ErrorBoundary>
+        )}
       </ClientSideSuspense>
     </RoomProvider>
   );
