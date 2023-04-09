@@ -1,2 +1,6 @@
-This was done in one afternoon because I wanted to be able to play magic with friends. 
-It does not implement any rules and assume that you are in vocal with your opponent. You can import any standard deck by pasting it in text format.
+# MAGINET [WIP]
+
+You want to be able to let your imagination run wild and play any deck you want without paying a fortune?  
+Do you want to play with your friends from a distance?  
+Maginet is for you!  
+Create the deck of your dreams or pick one from your favorite MTG sites, extract it in text format (MTGO), connect by voice with your friend, share your room id and go!
