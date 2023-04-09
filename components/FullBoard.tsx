@@ -70,8 +70,8 @@ function dataToLiveList(data?: Datum[] | CardFromLiveList) {
               name: cf.name,
               id: cf.id,
               image_uris: new LiveObject({
-                normal: cf.image_uris.normal,
-                large: cf.image_uris.large,
+                normal: cf.image_uris?.normal,
+                large: cf.image_uris?.large,
               }),
               produced_mana: cf.produced_mana,
             });
@@ -180,6 +180,17 @@ export default function FullBoard({ player }: Props) {
       // location.reload();
     }
   }
+
+  // useEffect(() => {
+  //   function onWindowFocused() {
+  //     document.body.click();
+  //   }
+  //   window.addEventListener("focus", onWindowFocused);
+
+  //   return () => {
+  //     window.removeEventListener("focus", onWindowFocused);
+  //   };
+  // }, []);
 
   const setDeck = useMutation(({ storage }, deck: CardFromLiveList) => {
     storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
