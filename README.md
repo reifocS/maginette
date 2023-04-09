@@ -1,4 +1,4 @@
-# MAGINET
+# MAGINET [WIP]
 
 You want to be able to let your imagination run wild and play any deck you want without paying a fortune?  
 Do you want to play with your friends from a distance?  
