@@ -398,7 +398,10 @@ export default function FullBoard({ player }: Props) {
                 draw={draw}
                 onShuffle={onShuffle}
                 onReset={onReset}
-                desengageAll={() => setEngaged([])}
+                desengageAll={() => {
+                  setEngaged([]);
+                  setCardPositionKey((prev) => prev + 1);
+                }}
                 resetPosition={() => setCardPositionKey((prev) => prev + 1)}
                 searchCard={searchCard}
               />
