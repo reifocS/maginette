@@ -21,7 +21,14 @@ function processRawText(fromArena: string) {
   return new Set(
     fromArena
       .split("\n")
-      .map((s) => s.replace(/^[0-9]+/g, "").trim())
+      .map((s) => {
+        let withoutNumber = s.replace(/^[0-9]+/g, "").trim();
+        if (withoutNumber.includes("//")) {
+          //Double faced card
+          return withoutNumber.split("//")[0].trim();
+        }
+        return withoutNumber;
+      })
       .filter((s) => s !== "")
   );
 }
@@ -29,7 +36,14 @@ function processRawText(fromArena: string) {
 function processCardWithTheirAmount(cards: string) {
   const map = new Map<string, number>();
   for (const card of cards.split("\n")) {
-    const [amount, ...cardName] = card.split(" ");
+    let [amount, ...cardName] = card.split(" ");
+    if (cardName.includes("//")) {
+      //Double faced card
+      cardName = cardName.slice(
+        0,
+        cardName.findIndex((c) => c === "//")
+      );
+    }
     map.set(cardName.join(" "), +amount);
   }
   return map;
