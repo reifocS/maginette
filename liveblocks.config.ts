@@ -35,8 +35,15 @@ type Storage = {
     playerTwo: GameData | null
 };
 
+const PUBLIC_API_KEY = process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY;
+
+// ============================================================================
+if (!PUBLIC_API_KEY) {
+    throw new Error(`You must add your Liveblocks public key to .env.local`);
+}
+
 const client = createClient({
-    publicApiKey: "pk_dev_leijKDtkwyqdAw8KP_KQt3YwEYho23NZVpt2BCFjUcxE1RoGMoheiTdwaGh_5ohg",
+    publicApiKey: PUBLIC_API_KEY,
 });
 
 
