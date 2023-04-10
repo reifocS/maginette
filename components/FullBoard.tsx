@@ -366,7 +366,7 @@ export default function FullBoard({ player }: Props) {
             setDeckFromText(target.cards.value);
           }}
         >
-          <label htmlFor="cards">Paste deck here</label>
+          <label htmlFor="cards">Paste deck here, in text format (MTGO)</label>
           <textarea
             name="cards"
             id="cards"

@@ -13,7 +13,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="container p-5">
+      <div className="p-5">
         <form
           className={`${"flex flex-col grow-0 items-center content-center"}`}
           onSubmit={(e) => {
