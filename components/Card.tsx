@@ -118,7 +118,7 @@ export default function Card({
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img
           alt={"hidden card"}
-          className="w-[120px] h-[165px]"
+          className="w-[120px] h-[165px] rounded-sm"
           src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg"
         />
       </>
