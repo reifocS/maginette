@@ -89,6 +89,10 @@ body {
   overflow-x: hidden;
 }
 
+#__next {
+  height: 100vh;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -97,6 +101,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  height: 100vh;
 }
 
 a {
