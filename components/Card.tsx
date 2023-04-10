@@ -140,7 +140,7 @@ export default function Card({
         ctrlKey &&
         createPortal(
           <div
-            className="fixed top-4 right-8 z-[9999]"
+            className="fixed top-4 right-0 z-[9999]"
             style={{
               pointerEvents: "none",
             }}
@@ -149,7 +149,7 @@ export default function Card({
             <img
               draggable={false}
               loading="eager"
-              className="w-[120px] h-[165px] rounded-lg overflow-hidden"
+              className="h-[50%] rounded-3xl overflow-hidden"
               src={src.image_uris?.normal}
               alt={src.name}
             ></img>
@@ -165,7 +165,7 @@ export default function Card({
           zIndex: isDragging ? 9999 : isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
           boxShadow: isLastPlayed
-            ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
+            ? "0px 0px 10px rgba(255, 255, 255, 0.8), 0px 0px 10px rgba(255, 255, 255, 0.6), 0px 0px 10px rgba(255, 255, 255, 0.4)"
             : "",
         }}
         {...bind()}

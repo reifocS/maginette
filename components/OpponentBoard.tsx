@@ -20,7 +20,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
   const tokens = Object.fromEntries(player?.tokens?.entries() ?? []);
   return (
     <div>
-      <p className="text-xl font-extrabold">hand</p>
+      <p className="text-xl font-extrabold">Hand</p>
       <div className="overflow-auto flex">
         {player?.hand?.map((c) => (
           // eslint-disable-next-line @next/next/no-img-element
@@ -33,7 +33,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         ))}
       </div>
       <details>
-        <summary>exile</summary>
+        <summary>Exile</summary>
         <Cards
           ctrlKey={ctrlKey}
           cards={player?.exile ?? []}
@@ -63,7 +63,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
       </details>
 
       <details>
-        <summary>graveyard</summary>
+        <summary>Graveyard</summary>
         <Cards
           ctrlKey={ctrlKey}
           cards={player?.graveyard ?? []}
@@ -92,7 +92,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         />
       </details>
 
-      <p className="text-xl font-extrabold">battlefield</p>
+      <p className="text-xl font-extrabold">Battlefield</p>
       <Battlefield
         ctrlKey={ctrlKey}
         cards={player?.battlefield ?? []}

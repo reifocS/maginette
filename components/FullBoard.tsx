@@ -404,10 +404,10 @@ export default function FullBoard({ player }: Props) {
         </div>
       )}
       {gameStarted && (
-        <div className="p-4">
-          <h1 className="font-extrabold text-center">Opponent</h1>
-          <div className="flex flex-col gap-4" key={cardPositionKey}>
-            <div className="border-b-4">
+        <div className="p-4 select-none">
+          <h1 className="font-extrabold text-center text-2xl">Opponent</h1>
+          <div className="flex flex-col" key={cardPositionKey}>
+            <div className="border-b-2 border-slate-500">
               <OpponentBoard ctrlKey={ctlrKey} player={otherPlayer} />
             </div>
             <div id="player_board">
