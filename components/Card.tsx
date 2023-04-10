@@ -118,7 +118,7 @@ export default function Card({
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img
           alt={"hidden card"}
-          className="w-[120px] h-[165px] rounded-sm"
+          className="w-[120px] h-[165px] rounded-lg overflow-hidden"
           src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg"
         />
       </>
@@ -149,6 +149,7 @@ export default function Card({
             <img
               draggable={false}
               loading="eager"
+              className="w-[120px] h-[165px] rounded-lg overflow-hidden"
               src={src.image_uris?.normal}
               alt={src.name}
             ></img>
@@ -157,7 +158,7 @@ export default function Card({
         )}
       <div
         ref={ref}
-        className="card"
+        className="card rounded-lg overflow-hidden"
         style={{
           transform: transformStyle,
           touchAction: "none",

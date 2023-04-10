@@ -3,6 +3,7 @@ import useCards from "@/hooks/useCards";
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import { generateRandomID, shuffle } from "@/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import Loading from "@/components/Loading";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";
 import {
@@ -335,6 +336,29 @@ export default function FullBoard({ player }: Props) {
     });
   }
 
+  const DEFAULT_DECK = [
+    "3 Ambitious Farmhand",
+    "4 Reckoner Bankbuster",
+    "2 Elspeth Resplendent",
+    "2 March of Otherworldly Light",
+    "4 The Restoration of Eiganjo",
+    "4 Roadside Reliquary",
+    "1 Eiganjo, Seat of the Empire",
+    "16 Plains",
+    "4 Ossification",
+    "4 Wedding Announcement",
+    "2 Destroy Evil",
+    "4 The Wandering Emperor",
+    "4 Lay Down Arms",
+    "3 The Eternal Wanderer",
+    "3 Mirrex",
+    "3 Depopulate",
+    "2 Fateful Absence",
+    "3 Farewell",
+    "4 Sunset Revelry",
+    "3 Loran of the Third Path",
+  ];
+
   const gameStarted =
     deck.length > 0 ||
     battlefield.length > 0 ||
@@ -344,59 +368,40 @@ export default function FullBoard({ player }: Props) {
 
   return (
     <>
-      {isLoading && fetchStatus !== "idle" && (
-        <div className="flex w-full items-center justify-center p-4">
-          <div
-            style={{
-              borderTopColor: "transparent",
+      <span className="underline">room id:</span> {room}
+      {isLoading &&
+        fetchStatus !== "idle" &&
+        Loading({ message: "Loading game board..." })}
+      {!(isLoading && fetchStatus !== "idle") && !gameStarted && (
+        <div className="flex h-full">
+          <form
+            className="m-auto flex flex-col grow-0 items-center content-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const target = e.target as typeof e.target & {
+                cards: { value: string };
+              };
+              setDeckFromText(target.cards.value);
             }}
-            className="w-16 ml-2 h-16 border-4 border-blue-400 border-solid rounded-full animate-spin"
-          ></div>
-        </div>
-      )}
-      room id: {room}
-      {!gameStarted && (
-        <form
-          className={`${"flex flex-col grow-0 items-center content-center"}`}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const target = e.target as typeof e.target & {
-              cards: { value: string };
-            };
-            setDeckFromText(target.cards.value);
-          }}
-        >
-          <label htmlFor="cards">Paste deck here, in text format (MTGO)</label>
-          <textarea
-            name="cards"
-            id="cards"
-            cols={30}
-            rows={10}
-            defaultValue={`
-3 Ambitious Farmhand
-4 Reckoner Bankbuster
-2 Elspeth Resplendent
-2 March of Otherworldly Light
-4 The Restoration of Eiganjo
-4 Roadside Reliquary
-1 Eiganjo, Seat of the Empire
-16 Plains
-4 Ossification
-4 Wedding Announcement
-2 Destroy Evil
-4 The Wandering Emperor
-4 Lay Down Arms
-3 The Eternal Wanderer
-3 Mirrex
+          >
+            <label htmlFor="cards" className="text-xl font-bold py-3">
+              Paste deck here, in text format (MTGO)
+            </label>
 
-3 Depopulate
-2 Fateful Absence
-3 Farewell
-4 Sunset Revelry
-3 Loran of the Third Path`}
-          ></textarea>
-          <button>Create deck</button>
-        </form>
+            <textarea
+              name="cards"
+              className="text-lg mb-6"
+              id="cards"
+              cols={40}
+              rows={10}
+              defaultValue={DEFAULT_DECK.join("\n")}
+            ></textarea>
+
+            <button className="w-full text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+              Create deck
+            </button>
+          </form>
+        </div>
       )}
       {gameStarted && (
         <div className="p-4">
