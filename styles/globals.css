@@ -130,14 +130,26 @@ kbd {
   transition: all 0.3s ease-in-out;
 }
 
-.battlefield>.card:first-child {
-  margin-top: 0; 
+.battlefield > .card:first-child {
+  margin-top: 0;
 }
 
-.battlefield>.card:not(:first-child) {
-  margin-top: -180px; 
+.battlefield > .card:not(:first-child) {
+  margin-top: -120px;
 }
 
+.hand {
+  transition: all 0.3s ease-in-out;
+}
+
+.hand {
+  margin-right: -3em;
+  transition: all 0.3s ease-in-out;
+}
+
+.hand:last-child {
+  margin-right: 0;
+}
 
 @media (prefers-color-scheme: dark) {
   html {

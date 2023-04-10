@@ -67,7 +67,12 @@ export default function Controls({
         <button className={buttonClassname} onClick={resetPosition}>
           Reset positions
         </button>
-        <button className={buttonClassname} title="undo" disabled={!canUndo} onClick={undo}>
+        <button
+          className={buttonClassname}
+          title="undo"
+          disabled={!canUndo}
+          onClick={undo}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -83,7 +88,12 @@ export default function Controls({
             />
           </svg>
         </button>
-        <button className={buttonClassname} title="redo" disabled={!canRedo} onClick={redo}>
+        <button
+          className={buttonClassname}
+          title="redo"
+          disabled={!canRedo}
+          onClick={redo}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -155,15 +165,26 @@ export default function Controls({
           pv
         </div>
       </div>
-      <div className="flex items-center gap-2">
-      <div className="font-normal shortcut_container">
-        Zoom with
-        <kbd>ctrl</kbd>
-        <kbd>hover</kbd>
+      <div className="flex items-center gap-2 justify-center w-full">
+        <div className="font-bold shortcut_container">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6"
+            />
+          </svg>with 
+          <kbd className="font-normal">ctrl</kbd>
+          and view actions with <kbd className="font-normal">left click</kbd>
+        </div>
       </div>
-      View actions with <kbd>left click</kbd>
-      </div>
-     
     </>
   );
 }

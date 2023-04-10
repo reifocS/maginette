@@ -1,6 +1,7 @@
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import Cards from "./Cards";
 import Battlefield from "./Battlefield";
+import Hand from "./Hand";
 
 type PlayerBoardProps = {
   hand: CardFromLiveList;
@@ -50,7 +51,7 @@ export default function PlayerBoard({
         ctrlKey={ctrlKey}
       />
       <p className="text-xl font-extrabold">Hand</p>
-      <Cards
+      <Hand
         cards={hand}
         show={true}
         field="hand"
@@ -61,57 +62,51 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         ctrlKey={ctrlKey}
       />
-      <p className="text-xl font-extrabold">Graveyard</p>
+      <details>
+        <summary>Graveyard</summary>
 
-      <summary>
-        <details>
-          <Cards
-            cards={graveyard}
-            show={true}
-            field="graveyard"
-            engaged={engaged}
-            engageCard={engageCard}
-            sendCardTo={sendCardTo}
-            addToken={addToken}
-            tokensMap={tokensMap}
-            ctrlKey={ctrlKey}
-          />
-        </details>
-      </summary>
+        <Cards
+          cards={graveyard}
+          show={true}
+          field="graveyard"
+          engaged={engaged}
+          engageCard={engageCard}
+          sendCardTo={sendCardTo}
+          addToken={addToken}
+          tokensMap={tokensMap}
+          ctrlKey={ctrlKey}
+        />
+      </details>
 
-      <p className="text-xl font-extrabold">Exile</p>
-      <summary>
-        <details>
-          <Cards
-            cards={exile}
-            show={true}
-            field="exile"
-            sendCardTo={sendCardTo}
-            engaged={engaged}
-            engageCard={engageCard}
-            addToken={addToken}
-            tokensMap={tokensMap}
-            ctrlKey={ctrlKey}
-          />
-        </details>
-      </summary>
+      <details>
+        <summary>Exile</summary>
+        <Cards
+          cards={exile}
+          show={true}
+          field="exile"
+          sendCardTo={sendCardTo}
+          engaged={engaged}
+          engageCard={engageCard}
+          addToken={addToken}
+          tokensMap={tokensMap}
+          ctrlKey={ctrlKey}
+        />
+      </details>
+      <details open>
+        <summary>Related cards</summary>
 
-      <p className="text-xl font-extrabold">Token card</p>
-      <summary>
-        <details open>
-          <Cards
-            cards={tokens}
-            show={true}
-            engaged={engaged}
-            engageCard={engageCard}
-            field="tokens"
-            sendCardTo={sendCardTo}
-            addToken={addToken}
-            tokensMap={tokensMap}
-            ctrlKey={ctrlKey}
-          />
-        </details>
-      </summary>
+        <Cards
+          cards={tokens}
+          show={true}
+          engaged={engaged}
+          engageCard={engageCard}
+          field="tokens"
+          sendCardTo={sendCardTo}
+          addToken={addToken}
+          tokensMap={tokensMap}
+          ctrlKey={ctrlKey}
+        />
+      </details>
     </>
   );
 }

@@ -399,7 +399,7 @@ export default function FullBoard({ player }: Props) {
         </form>
       )}
       {gameStarted && (
-        <>
+        <div className="p-4">
           <h1 className="font-extrabold text-center">Opponent</h1>
           <div className="flex flex-col gap-4" key={cardPositionKey}>
             <div className="border-b-4">
@@ -413,7 +413,6 @@ export default function FullBoard({ player }: Props) {
                 onReset={onReset}
                 desengageAll={() => {
                   setEngaged([]);
-                  setCardPositionKey((prev) => prev + 1);
                 }}
                 resetPosition={() => setCardPositionKey((prev) => prev + 1)}
                 searchCard={searchCard}
@@ -433,7 +432,7 @@ export default function FullBoard({ player }: Props) {
               />
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
