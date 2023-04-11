@@ -36,9 +36,17 @@ export default function Battlefield({
 }: PropsCards) {
   const grouped = groupLandCards(cards);
   return (
-    <div className="flex flex-wrap">
+    <div className="flex flex-wrap min-h-[253px]">
+      {!grouped.length && (
+        <div className="flex w-full text-center">
+          <p className="m-auto text-gray-400">No card here yet...</p>
+        </div>
+      )}
       {grouped.map((group) => (
-        <div className="flex flex-col battlefield" key={group.map((g) => g.id).join("")}>
+        <div
+          className="flex flex-col battlefield"
+          key={group.map((g) => g.id).join("")}
+        >
           {group.map((g) => (
             <Card
               key={g.id}

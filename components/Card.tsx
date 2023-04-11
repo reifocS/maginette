@@ -118,7 +118,7 @@ export default function Card({
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img
           alt={"hidden card"}
-          className="w-[120px] h-[165px]"
+          className="w-[120px] h-[165px] rounded-lg overflow-hidden"
           src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg"
         />
       </>
@@ -140,7 +140,7 @@ export default function Card({
         ctrlKey &&
         createPortal(
           <div
-            className="fixed top-4 right-8 z-[9999]"
+            className="fixed top-4 right-0 z-[9999]"
             style={{
               pointerEvents: "none",
             }}
@@ -149,6 +149,7 @@ export default function Card({
             <img
               draggable={false}
               loading="eager"
+              className="h-[50%] rounded-3xl overflow-hidden"
               src={src.image_uris?.normal}
               alt={src.name}
             ></img>
@@ -157,14 +158,14 @@ export default function Card({
         )}
       <div
         ref={ref}
-        className="card"
+        className="card rounded-lg overflow-hidden"
         style={{
           transform: transformStyle,
           touchAction: "none",
           zIndex: isDragging ? 9999 : isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
           boxShadow: isLastPlayed
-            ? "0px 0px 20px rgba(255, 255, 255, 0.8), 0px 0px 50px rgba(255, 255, 255, 0.6), 0px 0px 100px rgba(255, 255, 255, 0.4)"
+            ? "0px 0px 10px rgba(255, 255, 255, 0.8), 0px 0px 10px rgba(255, 255, 255, 0.6), 0px 0px 10px rgba(255, 255, 255, 0.4)"
             : "",
         }}
         {...bind()}

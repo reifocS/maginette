@@ -28,7 +28,12 @@ export default function Cards({
   ctrlKey,
 }: PropsCards) {
   return (
-    <ul className="flex gap-3 flex-wrap">
+    <ul className="flex gap-3 flex-wrap min-h-[253px]">
+      {!cards.length && (
+        <div className="flex w-full text-center">
+          <p className="m-auto text-gray-400">No card here yet...</p>
+        </div>
+      )}
       {cards.map((v) => (
         <li key={v.id}>
           <Card
