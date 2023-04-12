@@ -265,7 +265,7 @@ export default function FullBoard({ player }: Props) {
 
   function searchCard(cardName: string) {
     const cardToAdd = deck.find((card) =>
-      card.name.toLowerCase().includes(cardName)
+      card.name.toLowerCase().includes(cardName.toLowerCase())
     );
     if (cardToAdd) {
       batch(() => {
