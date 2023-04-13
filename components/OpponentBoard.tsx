@@ -9,7 +9,7 @@ type Props = {
     readonly graveyard: CardFromLiveList;
     readonly exile: CardFromLiveList;
     readonly hand: CardFromLiveList;
-    readonly battlefield: CardFromLiveList;
+    readonly battlefield: readonly CardFromLiveList[];
     readonly engaged: readonly string[];
     readonly tokens: ReadonlyMap<string, [number, number]>;
   } | null;
@@ -118,6 +118,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
           throw new Error("Should never happen.");
         }}
         tokensMap={tokens}
+        setSelection={function (cardId: string): void {
+          throw new Error("Should never happen.");
+        }}
+        cardSelection={[]}
       />
     </div>
   );

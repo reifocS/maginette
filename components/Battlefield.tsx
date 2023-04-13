@@ -33,22 +33,29 @@ export default function Battlefield({
   engageCard,
   addToken,
   tokensMap,
-}: PropsCards) {
-  const grouped = groupLandCards(cards);
+  setSelection,
+  cardSelection,
+}: Omit<PropsCards, "cards"> & {
+  setSelection: (cardId: string) => void;
+  cards: readonly CardFromLiveList[];
+  cardSelection: string[];
+}) {
+  // const grouped = groupLandCards(cards);
   return (
-    <div className="flex flex-wrap min-h-[253px]">
-      {!grouped.length && (
+    <div className="flex flex-wrap min-h-[253px] gap-4">
+      {!cards.length && (
         <div className="flex w-full text-center">
           <p className="m-auto text-gray-400">No card here yet...</p>
         </div>
       )}
-      {grouped.map((group) => (
+      {cards.map((group) => (
         <div
           className="flex flex-col battlefield"
           key={group.map((g) => g.id).join("")}
         >
           {group.map((g) => (
             <Card
+              setSelection={setSelection}
               key={g.id}
               ctrlKey={ctrlKey}
               card={g}
@@ -58,6 +65,7 @@ export default function Battlefield({
               sendCardTo={sendCardTo}
               engaged={engaged}
               engageCard={engageCard}
+              cardSelection={cardSelection}
               addToken={addToken}
               tokensMap={tokensMap}
             />

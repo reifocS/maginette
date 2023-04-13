@@ -11,6 +11,7 @@ import {
   useMutation,
   useBatch,
   useMyPresence,
+  LiveCard,
 } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
@@ -45,7 +46,7 @@ function processCardWithTheirAmount(cards: string) {
         cardName.findIndex((c) => c === "//")
       );
     }
-    map.set(cardName.join(" "), +amount);
+    map.set(cardName.join(" ").toLowerCase(), +amount);
   }
   return map;
 }
@@ -53,6 +54,10 @@ function processCardWithTheirAmount(cards: string) {
 type Props = {
   player: number;
 };
+
+function battlefieldToLiveList(data: readonly CardFromLiveList[]) {
+  return new LiveList(data.map((arr) => dataToLiveList(arr)));
+}
 
 function dataToLiveList(data?: Datum[] | CardFromLiveList) {
   return new LiveList(
@@ -152,20 +157,65 @@ export default function FullBoard({ player }: Props) {
   const deck = useMemo(() => currentPlayer?.deck ?? [], [currentPlayer?.deck]);
   const hand = currentPlayer?.hand ?? [];
   const graveyard = currentPlayer?.graveyard ?? [];
-  const battlefield = currentPlayer?.battlefield ?? [];
+  const battlefield: readonly CardFromLiveList[] =
+    currentPlayer?.battlefield ?? [];
   const engaged = currentPlayer?.engaged ?? [];
   const exile = currentPlayer?.exile ?? [];
   const related = currentPlayer?.related ?? [];
   const batch = useBatch();
   const [, updateMyPresence] = useMyPresence();
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
+  const selection = currentPlayer?.selected;
+
+  const gKeyPressed = useKeyPress("g");
+
+  const clearSelectionAndGroup = useMutation(({ storage }) => {
+    const current = storage.get(currentPlayerId)?.get("selected") ?? [];
+    if (current.length === 0) return;
+    storage.get(currentPlayerId)?.set("selected", []);
+    let actualBattlefield = storage
+      .get(currentPlayerId)
+      ?.get("battlefield")
+      .toImmutable();
+    if (!actualBattlefield) return;
+    let newStack: CardFromLiveList = [];
+    for (const stack of actualBattlefield) {
+      let cardsToInclude: CardFromLiveList = [];
+      for (const card of stack) {
+        if (current.includes(card.id)) {
+          cardsToInclude = [...cardsToInclude, card];
+        }
+      }
+      if (cardsToInclude.length > 0) {
+        newStack = [...newStack, ...cardsToInclude];
+      }
+    }
+    console.log({ newStack });
+    //start by removing the selected cards
+    actualBattlefield = actualBattlefield.map((stack) =>
+      stack.filter((card) => !current.includes(card.id))
+    );
+    console.log({ actualBattlefield });
+    actualBattlefield = actualBattlefield.filter((stack) => stack.length > 0);
+    //now push the stack at the beginning
+    const newBattlefield = [newStack, ...actualBattlefield];
+    storage
+      .get(currentPlayerId)
+      ?.set("battlefield", battlefieldToLiveList(newBattlefield));
+  }, []);
+
+  useEffect(() => {
+    if (gKeyPressed) {
+      clearSelectionAndGroup();
+    }
+  }, [gKeyPressed, clearSelectionAndGroup]);
 
   function onDeckDataFetched(data: Datum[]) {
     let d = [];
     for (const card of data) {
       const amountInDeckToAdd = Number(
         //Support double faced card
-        memoAmount.get(card.name.split("//")[0].trim())
+        memoAmount.get(card.name.split("//")[0].trim().toLowerCase())
       );
       for (let i = 0; i < amountInDeckToAdd; ++i) {
         d.push({ ...card, id: card.id + "-" + i });
@@ -174,6 +224,18 @@ export default function FullBoard({ player }: Props) {
     setDeck(shuffle(d));
   }
 
+  const setSelection = useMutation(({ storage }, cardId: string) => {
+    const current = storage.get(currentPlayerId)?.get("selected") ?? [];
+    storage
+      .get(currentPlayerId)
+      ?.set(
+        "selected",
+        current?.find((id) => id === cardId)
+          ? current.filter((id) => id !== cardId)
+          : [...current, cardId]
+      );
+  }, []);
+
   function onDeckRelatedFetched(data: Datum[]) {
     if (data) {
       setRelated(data);
@@ -181,17 +243,6 @@ export default function FullBoard({ player }: Props) {
       // location.reload();
     }
   }
-
-  // useEffect(() => {
-  //   function onWindowFocused() {
-  //     document.body.click();
-  //   }
-  //   window.addEventListener("focus", onWindowFocused);
-
-  //   return () => {
-  //     window.removeEventListener("focus", onWindowFocused);
-  //   };
-  // }, []);
 
   const setDeck = useMutation(({ storage }, deck: CardFromLiveList) => {
     storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
@@ -205,10 +256,10 @@ export default function FullBoard({ player }: Props) {
   }, []);
 
   const setBattlefield = useMutation(
-    ({ storage }, battlefield: CardFromLiveList) => {
+    ({ storage }, battlefield: readonly CardFromLiveList[]) => {
       storage
         .get(currentPlayerId)
-        ?.set("battlefield", dataToLiveList(battlefield));
+        ?.set("battlefield", battlefieldToLiveList(battlefield));
     },
     []
   );
@@ -240,10 +291,7 @@ export default function FullBoard({ player }: Props) {
     setDeck(shuffle(deck));
   }
 
-  const mappingFieldToStateSetter: Record<
-    Fields,
-    (deck: CardFromLiveList) => void
-  > = {
+  const mappingFieldToStateSetter: Record<Fields, (d: any) => void> = {
     deck: setDeck,
     battlefield: setBattlefield,
     graveyard: setGraveyard,
@@ -254,7 +302,10 @@ export default function FullBoard({ player }: Props) {
     },
   };
 
-  const mappingFieldToLiveState: Record<Fields, CardFromLiveList> = {
+  const mappingFieldToLiveState: Record<
+    Fields,
+    CardFromLiveList | readonly CardFromLiveList[]
+  > = {
     deck,
     battlefield,
     graveyard,
@@ -265,7 +316,7 @@ export default function FullBoard({ player }: Props) {
 
   function searchCard(cardName: string) {
     const cardToAdd = deck.find((card) =>
-      card.name.toLowerCase().includes(cardName)
+      card.name.toLowerCase().includes(cardName.toLowerCase())
     );
     if (cardToAdd) {
       batch(() => {
@@ -290,13 +341,31 @@ export default function FullBoard({ player }: Props) {
         } else if (payload.position === "bottom") {
           setDeck([...deck, card]);
         }
-        if (from !== "tokens") {
-          fromStateSetter(fromState.filter((c) => c.id !== card.id));
+        if (from === "battlefield") {
+          fromStateSetter(
+            (fromState as CardFromLiveList[]).map((stack) =>
+              stack.filter((c) => c.id !== card.id)
+            )
+          );
+        } else if (from !== "tokens") {
+          fromStateSetter(
+            (fromState as CardFromLiveList).filter((c) => c.id !== card.id)
+          );
         }
         return;
       }
       if (from !== "tokens") {
-        fromStateSetter(fromState.filter((c) => c.id !== card.id));
+        if (from !== "battlefield")
+          fromStateSetter(
+            (fromState as CardFromLiveList).filter((c) => c.id !== card.id)
+          );
+        else {
+          fromStateSetter(
+            (fromState as CardFromLiveList[]).map((stack) =>
+              stack.filter((c) => c.id !== card.id)
+            )
+          );
+        }
       }
       const id = generateRandomID();
       if (to === "battlefield") {
@@ -304,7 +373,10 @@ export default function FullBoard({ player }: Props) {
       } else {
         updateMyPresence({ lastPlayedCard: null });
       }
-      toStateSetter([...toState, { ...card, id }]);
+      if (to !== "battlefield") toStateSetter([...toState, { ...card, id }]);
+      else {
+        toStateSetter([...toState, [{ ...card, id }]]);
+      }
     });
   }
 
@@ -433,6 +505,8 @@ export default function FullBoard({ player }: Props) {
                 tokensMap={tokensMap}
                 tokens={related}
                 sendCardTo={sendCardTo}
+                cardSelection={selection}
+                setSelection={setSelection}
                 ctrlKey={ctlrKey}
               />
             </div>
