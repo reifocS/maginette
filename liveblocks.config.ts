@@ -7,7 +7,7 @@ type Presence = {
     // ...
 };
 
-type LiveCard = LiveObject<{
+export type LiveCard = LiveObject<{
     id: string,
     name: string;
     card_faces?: LiveList<LiveCard>
@@ -24,10 +24,12 @@ type GameData = LiveObject<{
     graveyard: LiveList<LiveCard>;
     exile: LiveList<LiveCard>;
     hand: LiveList<LiveCard>;
-    battlefield: LiveList<LiveCard>;
+    battlefield: LiveList<LiveList<LiveCard>>;
+    //battlefield: LiveList<LiveCard>;
     engaged: LiveList<string>;
     tokens: LiveMap<string, [number, number]>;
     life: number;
+    selected: string[];
 }>
 
 type Storage = {

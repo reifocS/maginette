@@ -89,6 +89,7 @@ type ContextMenuProps = {
   card: Datum;
   addToken: (cardId: string, [power, thougness]: [number, number]) => void;
   currentTokenValue?: [number, number];
+  addToSelection?: () => void;
 };
 
 const CustomContextMenu = ({
@@ -102,6 +103,7 @@ const CustomContextMenu = ({
   card,
   addToken,
   currentTokenValue,
+  addToSelection = () => {},
 }: ContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -182,6 +184,14 @@ const CustomContextMenu = ({
             Engage/Desengage {getShortcut(field, "engage/desengage")}
           </div>
         </li>
+        {field === "battlefield" && (
+          <li className={className} onClick={addToSelection}>
+            <div className="shortcut_container">
+              Add to stack <kbd>alt</kbd>
+              <kbd>shift</kbd>
+            </div>
+          </li>
+        )}
         <li className={className} onClick={onSwapped}>
           Swap face
         </li>

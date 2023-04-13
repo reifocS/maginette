@@ -187,8 +187,10 @@ export default function Controls({
           </svg>
           with
           <kbd className="font-normal">ctrl</kbd>
-          and view actions with <kbd className="font-normal">left click</kbd>
+          and view actions with <kbd className="font-normal">left click</kbd>.
+          <kbd>g</kbd> to stack selected cards
         </div>
+
       </div>
     </>
   );

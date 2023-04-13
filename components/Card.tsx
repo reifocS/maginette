@@ -19,6 +19,8 @@ type PropsCard = {
     [k: string]: [number, number];
   };
   ctrlKey: boolean;
+  setSelection?: (cardId: string) => void;
+  cardSelection?: string[];
 };
 
 const gridSize = 30;
@@ -34,6 +36,8 @@ export default function Card({
   tokensMap,
   ctrlKey,
   overrideZindex,
+  cardSelection = [],
+  setSelection = () => {},
 }: PropsCard) {
   const [swap, setSwap] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -81,6 +85,9 @@ export default function Card({
 
     onClick: ({ shiftKey, ctrlKey, altKey }) => {
       // Shortcuts
+      if (field === "battlefield" && !isOpponent && shiftKey && altKey) {
+        return setSelection(card.id);
+      }
       if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
       if (isOpponent) setSwap((prev) => !prev);
@@ -134,6 +141,7 @@ export default function Card({
       ? "w-[180px] h-[257px]"
       : "w-[150px] h-[214px]";
 
+  const isFromSelection = cardSelection.find((id) => id === card.id);
   return (
     <>
       {isHover &&
@@ -162,6 +170,7 @@ export default function Card({
         style={{
           transform: transformStyle,
           touchAction: "none",
+          opacity: isFromSelection ? 0.5 : 1,
           zIndex: isDragging ? 9999 : isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
           boxShadow: isLastPlayed
@@ -200,6 +209,11 @@ export default function Card({
           card={card as Datum}
           addToken={addToken}
           currentTokenValue={tokensMap[card.id]}
+          addToSelection={() => {
+            if (field === "battlefield" && !isOpponent) {
+              setSelection(card.id);
+            }
+          }}
         />
       )}
     </>

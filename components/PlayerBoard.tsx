@@ -5,7 +5,7 @@ import Hand from "./Hand";
 
 type PlayerBoardProps = {
   hand: CardFromLiveList;
-  battlefield: CardFromLiveList;
+  battlefield: readonly CardFromLiveList[];
   graveyard: CardFromLiveList;
   exile: CardFromLiveList;
   tokens: CardFromLiveList;
@@ -17,11 +17,9 @@ type PlayerBoardProps = {
     [k: string]: [number, number];
   };
   ctrlKey: boolean;
+  cardSelection?: string[];
+  setSelection: (id: string) => void;
 };
-
-function groupByName(cards: CardFromLiveList) {
-  return [...cards].sort((a, b) => a.name.localeCompare(b.name));
-}
 
 export default function PlayerBoard({
   sendCardTo,
@@ -34,13 +32,16 @@ export default function PlayerBoard({
   engageCard,
   engaged,
   tokensMap,
+  cardSelection = [],
   ctrlKey,
+  setSelection,
 }: PlayerBoardProps) {
   return (
     <>
       <p className="text-xl font-extrabold">Battlefield</p>
       <Battlefield
-        cards={groupByName(battlefield)}
+        cardSelection={cardSelection}
+        cards={battlefield}
         show={true}
         field="battlefield"
         engaged={engaged}
@@ -48,6 +49,7 @@ export default function PlayerBoard({
         sendCardTo={sendCardTo}
         addToken={addToken}
         tokensMap={tokensMap}
+        setSelection={setSelection}
         ctrlKey={ctrlKey}
       />
       <p className="text-xl font-extrabold">Hand</p>

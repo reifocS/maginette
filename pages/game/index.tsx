@@ -40,6 +40,7 @@ const Game = () => {
           life: 20,
           related: new LiveList(),
           hand: new LiveList(),
+          selected: [],
         }),
         playerTwo: new LiveObject({
           tokens: new LiveMap(),
@@ -51,6 +52,7 @@ const Game = () => {
           life: 20,
           related: new LiveList(),
           hand: new LiveList(),
+          selected: [],
         }),
       }}
       initialPresence={{ lastPlayedCard: null }}

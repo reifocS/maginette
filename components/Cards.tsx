@@ -15,6 +15,7 @@ export type PropsCards = {
   };
   ctrlKey: boolean;
 };
+
 export default function Cards({
   cards,
   show,
