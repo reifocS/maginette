@@ -441,8 +441,8 @@ export default function FullBoard({ player }: Props) {
   return (
     <>
       <span className="underline">room id:</span> {room}
-      {(isLoading &&
-        fetchStatus !== "idle") || isRefetching &&
+      {((isLoading &&
+        fetchStatus !== "idle") || isRefetching) &&
         Loading({ message: "Loading game board..." })}
       {!(isLoading && fetchStatus !== "idle") && !gameStarted && (
         <div className="flex h-full">
