@@ -54,8 +54,9 @@ function useCards(names: string[], onDataFetched: (data: Datum[]) => void) {
         onSuccess: (data) => {
             onDataFetched(data);
         },
-        staleTime: Number.POSITIVE_INFINITY,
+        staleTime: 1,
         enabled: names.length > 0,
+        structuralSharing: false, 
         refetchOnWindowFocus: false,
         select: useCallback((data: CardCollection[]) => {
             const cards = data.flatMap((d) => d.data);
