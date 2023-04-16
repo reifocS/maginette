@@ -101,9 +101,17 @@ export default function Controls({
             searchCard(target.card_name.value);
           }}
         >
+          {" "}
+          <datalist id="cards">
+            {deck.map((card) => (
+              <option key={card.id} value={card.name} />
+            ))}
+          </datalist>
           <input
-            id="card_name"
+            type="search"
+            id="cards"
             name="card_name"
+            list="cards"
             className="px-3"
             required
             placeholder="card name"
@@ -190,7 +198,6 @@ export default function Controls({
           and view actions with <kbd className="font-normal">left click</kbd>.
           <kbd>g</kbd> to stack selected cards
         </div>
-
       </div>
     </>
   );
