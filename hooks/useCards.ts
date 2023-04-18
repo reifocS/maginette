@@ -54,7 +54,6 @@ function useCards(names: string[], onDataFetched: (data: Datum[]) => void) {
         onSuccess: (data) => {
             onDataFetched(data);
         },
-        staleTime: 1,
         enabled: names.length > 0,
         structuralSharing: false, 
         refetchOnWindowFocus: false,
