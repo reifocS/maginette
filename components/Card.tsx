@@ -73,9 +73,9 @@ export default function Card({
       setIsHover(false);
     },
     onDrag: ({ offset: [x, y], xy }) => {
-      const newX = Math.round(x / gridSize) * gridSize;
-      const newY = Math.round(y / gridSize) * gridSize;
-      setPosition({ x: newX, y: newY });
+      // const newX = Math.round(x / gridSize) * gridSize;
+      // const newY = Math.round(y / gridSize) * gridSize;
+      // setPosition({ x: newX, y: newY });
     },
     onContextMenu: ({ event }) => {
       if (!show || isOpponent) return;
