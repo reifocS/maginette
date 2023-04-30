@@ -12,6 +12,8 @@ import {
   useBatch,
   useMyPresence,
   LiveCard,
+  dataToLiveList,
+  datumToLiveCard,
 } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
@@ -55,84 +57,6 @@ type Props = {
   player: number;
 };
 
-function datumToLiveCard(d: Datum) {
-  return new LiveObject({
-    id: d.id,
-    name: d.name,
-    image_uris: new LiveObject({
-      normal: d.image_uris?.normal,
-      large: d.image_uris?.large,
-    }),
-    produced_mana: (d as Datum).produced_mana,
-    card_faces: new LiveList(
-      d.card_faces?.map((cf) => {
-        return new LiveObject({
-          name: cf.name,
-          id: cf.id,
-          image_uris: new LiveObject({
-            normal: cf.image_uris?.normal,
-            large: cf.image_uris?.large,
-          }),
-          produced_mana: cf.produced_mana,
-        });
-      })
-    ),
-  });
-}
-
-function dataToLiveList(data?: Datum[] | CardFromLiveList) {
-  return new LiveList(
-    data?.map((d) => {
-      return new LiveObject({
-        id: d.id,
-        name: d.name,
-        image_uris: new LiveObject({
-          normal: d.image_uris?.normal,
-          large: d.image_uris?.large,
-        }),
-        produced_mana: (d as Datum).produced_mana,
-        card_faces: new LiveList(
-          d.card_faces?.map((cf) => {
-            return new LiveObject({
-              name: cf.name,
-              id: cf.id,
-              image_uris: new LiveObject({
-                normal: cf.image_uris?.normal,
-                large: cf.image_uris?.large,
-              }),
-              produced_mana: cf.produced_mana,
-            });
-          })
-        ),
-      });
-    })
-  );
-}
-
-// function dataToLiveObject(
-//   hand: Datum[],
-//   graveyard: Datum[],
-//   exile: Datum[],
-//   engaged: string[],
-//   battlefield: Datum[],
-//   data?: Datum[],
-//   related?: Datum[],
-//   life?: number,
-//   tokens?: [string, [number, number]][]
-// ) {
-//   return new LiveObject({
-//     deck: dataToLiveList(data),
-//     related: dataToLiveList(related),
-//     hand: dataToLiveList(hand),
-//     graveyard: dataToLiveList(graveyard),
-//     exile: dataToLiveList(exile),
-//     engaged: new LiveList(engaged),
-//     battlefield: dataToLiveList(battlefield),
-//     life: life!,
-//     tokens: new LiveMap(tokens),
-//   });
-// }
-
 export default function FullBoard({ player }: Props) {
   const [deckFromText, setDeckFromText] = useState("");
   const { data, isLoading, fetchStatus, isRefetching } = useCards(
@@ -155,7 +79,8 @@ export default function FullBoard({ player }: Props) {
       ?.filter((v) => v.all_parts && v.all_parts.length > 0)
       .flatMap((v) => v.all_parts) ?? [];
 
-  const relatedQuery = useCards(
+  //fetch related cards
+  useCards(
     Array.from(
       new Set(
         allParts.map((v) => {
@@ -460,8 +385,6 @@ export default function FullBoard({ player }: Props) {
   function idsToFullCard(ids: string[]) {
     return ids.map((id) => allCards?.get(id)!).filter(Boolean);
   }
-
-  console.log({ battlefield });
 
   return (
     <>
