@@ -46,7 +46,7 @@ function processCardWithTheirAmount(cards: string) {
         cardName.findIndex((c) => c === "//")
       );
     }
-    map.set(cardName.join(" ").toLowerCase(), +amount);
+    map.set(cardName.join(" ").toLowerCase().trim(), +amount);
   }
   return map;
 }
