@@ -1,4 +1,4 @@
-export function shuffle<T>(array: readonly T[]) {
+export function shuffle<T>(array: T[]) {
     return array
         .map(value => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)

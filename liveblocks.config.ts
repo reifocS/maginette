@@ -19,13 +19,13 @@ export type LiveCard = LiveObject<{
 }>;
 
 type GameData = LiveObject<{
-    deck: LiveList<LiveCard>;
+    deck: string[];
+    allCards: LiveMap<string, LiveCard>;
     related: LiveList<LiveCard>;
-    graveyard: LiveList<LiveCard>;
-    exile: LiveList<LiveCard>;
-    hand: LiveList<LiveCard>;
-    battlefield: LiveList<LiveList<LiveCard>>;
-    //battlefield: LiveList<LiveCard>;
+    graveyard: string[];
+    exile: string[];
+    hand: string[];
+    battlefield: string[][];
     engaged: LiveList<string>;
     tokens: LiveMap<string, [number, number]>;
     life: number;
