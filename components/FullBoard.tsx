@@ -12,6 +12,8 @@ import {
   useBatch,
   useMyPresence,
   LiveCard,
+  dataToLiveList,
+  datumToLiveCard,
 } from "@/liveblocks.config";
 import { LiveObject, LiveList, LiveMap } from "@liveblocks/client";
 import OpponentBoard from "./OpponentBoard";
@@ -55,63 +57,6 @@ type Props = {
   player: number;
 };
 
-function battlefieldToLiveList(data: readonly CardFromLiveList[]) {
-  return new LiveList(data.map((arr) => dataToLiveList(arr)));
-}
-
-function dataToLiveList(data?: Datum[] | CardFromLiveList) {
-  return new LiveList(
-    data?.map((d) => {
-      return new LiveObject({
-        id: d.id,
-        name: d.name,
-        image_uris: new LiveObject({
-          normal: d.image_uris?.normal,
-          large: d.image_uris?.large,
-        }),
-        produced_mana: (d as Datum).produced_mana,
-        card_faces: new LiveList(
-          d.card_faces?.map((cf) => {
-            return new LiveObject({
-              name: cf.name,
-              id: cf.id,
-              image_uris: new LiveObject({
-                normal: cf.image_uris?.normal,
-                large: cf.image_uris?.large,
-              }),
-              produced_mana: cf.produced_mana,
-            });
-          })
-        ),
-      });
-    })
-  );
-}
-
-// function dataToLiveObject(
-//   hand: Datum[],
-//   graveyard: Datum[],
-//   exile: Datum[],
-//   engaged: string[],
-//   battlefield: Datum[],
-//   data?: Datum[],
-//   related?: Datum[],
-//   life?: number,
-//   tokens?: [string, [number, number]][]
-// ) {
-//   return new LiveObject({
-//     deck: dataToLiveList(data),
-//     related: dataToLiveList(related),
-//     hand: dataToLiveList(hand),
-//     graveyard: dataToLiveList(graveyard),
-//     exile: dataToLiveList(exile),
-//     engaged: new LiveList(engaged),
-//     battlefield: dataToLiveList(battlefield),
-//     life: life!,
-//     tokens: new LiveMap(tokens),
-//   });
-// }
-
 export default function FullBoard({ player }: Props) {
   const [deckFromText, setDeckFromText] = useState("");
   const { data, isLoading, fetchStatus, isRefetching } = useCards(
@@ -134,7 +79,8 @@ export default function FullBoard({ player }: Props) {
       ?.filter((v) => v.all_parts && v.all_parts.length > 0)
       .flatMap((v) => v.all_parts) ?? [];
 
-  const relatedQuery = useCards(
+  //fetch related cards
+  useCards(
     Array.from(
       new Set(
         allParts.map((v) => {
@@ -157,8 +103,7 @@ export default function FullBoard({ player }: Props) {
   const deck = useMemo(() => currentPlayer?.deck ?? [], [currentPlayer?.deck]);
   const hand = currentPlayer?.hand ?? [];
   const graveyard = currentPlayer?.graveyard ?? [];
-  const battlefield: readonly CardFromLiveList[] =
-    currentPlayer?.battlefield ?? [];
+  const battlefield = currentPlayer?.battlefield ?? [];
   const engaged = currentPlayer?.engaged ?? [];
   const exile = currentPlayer?.exile ?? [];
   const related = currentPlayer?.related ?? [];
@@ -166,23 +111,20 @@ export default function FullBoard({ player }: Props) {
   const [, updateMyPresence] = useMyPresence();
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
   const selection = currentPlayer?.selected;
-
+  const allCards = currentPlayer?.allCards;
   const gKeyPressed = useKeyPress("g");
 
   const clearSelectionAndGroup = useMutation(({ storage }) => {
     const current = storage.get(currentPlayerId)?.get("selected") ?? [];
     if (current.length === 0) return;
     storage.get(currentPlayerId)?.set("selected", []);
-    let actualBattlefield = storage
-      .get(currentPlayerId)
-      ?.get("battlefield")
-      .toImmutable();
+    let actualBattlefield = storage.get(currentPlayerId)?.get("battlefield");
     if (!actualBattlefield) return;
-    let newStack: CardFromLiveList = [];
+    let newStack: string[] = [];
     for (const stack of actualBattlefield) {
-      let cardsToInclude: CardFromLiveList = [];
+      let cardsToInclude: string[] = [];
       for (const card of stack) {
-        if (current.includes(card.id)) {
+        if (current.includes(card)) {
           cardsToInclude = [...cardsToInclude, card];
         }
       }
@@ -190,18 +132,14 @@ export default function FullBoard({ player }: Props) {
         newStack = [...newStack, ...cardsToInclude];
       }
     }
-    console.log({ newStack });
     //start by removing the selected cards
     actualBattlefield = actualBattlefield.map((stack) =>
-      stack.filter((card) => !current.includes(card.id))
+      stack.filter((card) => !current.includes(card))
     );
-    console.log({ actualBattlefield });
     actualBattlefield = actualBattlefield.filter((stack) => stack.length > 0);
     //now push the stack at the beginning
     const newBattlefield = [newStack, ...actualBattlefield];
-    storage
-      .get(currentPlayerId)
-      ?.set("battlefield", battlefieldToLiveList(newBattlefield));
+    storage.get(currentPlayerId)?.set("battlefield", newBattlefield);
   }, []);
 
   useEffect(() => {
@@ -211,7 +149,7 @@ export default function FullBoard({ player }: Props) {
   }, [gKeyPressed, clearSelectionAndGroup]);
 
   function onDeckDataFetched(data: Datum[]) {
-    let d = [];
+    let d: Datum[] = [];
     for (const card of data) {
       const amountInDeckToAdd = Number(
         //Support double faced card
@@ -221,7 +159,8 @@ export default function FullBoard({ player }: Props) {
         d.push({ ...card, id: card.id + "-" + i });
       }
     }
-    setDeck(shuffle(d));
+    setDeck(shuffle(d.map((c) => c.id)));
+    setAllCards(d.map((c) => [c.id, datumToLiveCard(c)]));
   }
 
   const setSelection = useMutation(({ storage }, cardId: string) => {
@@ -244,35 +183,42 @@ export default function FullBoard({ player }: Props) {
     }
   }
 
-  const setDeck = useMutation(({ storage }, deck: CardFromLiveList) => {
-    storage.get(currentPlayerId)?.set("deck", dataToLiveList(deck));
+  const setAllCards = useMutation(
+    ({ storage }, allCards: [string, LiveCard][]) => {
+      storage.get(currentPlayerId)?.set("allCards", new LiveMap(allCards));
+    },
+    []
+  );
+
+  //Create a new card and add it to our map
+  const appendAllCards = useMutation(({ storage }, newCard: LiveCard) => {
+    storage
+      .get(currentPlayerId)
+      ?.get("allCards")
+      .set(newCard.get("id"), newCard);
   }, []);
-  const setHand = useMutation(({ storage }, hand: CardFromLiveList) => {
-    storage.get(currentPlayerId)?.set("hand", dataToLiveList(hand));
+
+  const setDeck = useMutation(({ storage }, deck: string[]) => {
+    storage.get(currentPlayerId)?.set("deck", deck);
+  }, []);
+  const setHand = useMutation(({ storage }, hand: string[]) => {
+    storage.get(currentPlayerId)?.set("hand", hand);
   }, []);
 
   const setEngaged = useMutation(({ storage }, engaged: string[]) => {
     storage.get(currentPlayerId)?.set("engaged", new LiveList(engaged));
   }, []);
 
-  const setBattlefield = useMutation(
-    ({ storage }, battlefield: readonly CardFromLiveList[]) => {
-      storage
-        .get(currentPlayerId)
-        ?.set("battlefield", battlefieldToLiveList(battlefield));
-    },
-    []
-  );
+  const setBattlefield = useMutation(({ storage }, battlefield: string[][]) => {
+    storage.get(currentPlayerId)?.set("battlefield", battlefield);
+  }, []);
 
-  const setGraveyard = useMutation(
-    ({ storage }, graveyard: CardFromLiveList) => {
-      storage.get(currentPlayerId)?.set("graveyard", dataToLiveList(graveyard));
-    },
-    []
-  );
+  const setGraveyard = useMutation(({ storage }, graveyard: string[]) => {
+    storage.get(currentPlayerId)?.set("graveyard", graveyard);
+  }, []);
 
-  const setExile = useMutation(({ storage }, exile: CardFromLiveList) => {
-    storage.get(currentPlayerId)?.set("exile", dataToLiveList(exile));
+  const setExile = useMutation(({ storage }, exile: string[]) => {
+    storage.get(currentPlayerId)?.set("exile", exile);
   }, []);
   const setTokens = useMutation(
     ({ storage }, tokens: [string, [number, number]][]) => {
@@ -297,14 +243,14 @@ export default function FullBoard({ player }: Props) {
     graveyard: setGraveyard,
     hand: setHand,
     exile: setExile,
-    tokens: (t) => {
+    tokens: () => {
       throw new Error("Trying to change token state");
     },
   };
 
   const mappingFieldToLiveState: Record<
     Fields,
-    CardFromLiveList | readonly CardFromLiveList[]
+    string[] | CardFromLiveList | string[][]
   > = {
     deck,
     battlefield,
@@ -316,11 +262,11 @@ export default function FullBoard({ player }: Props) {
 
   function searchCard(cardName: string) {
     const cardToAdd = deck.find((card) =>
-      card.name.toLowerCase().includes(cardName.toLowerCase())
+      allCards?.get(card)?.name.toLowerCase().includes(cardName.toLowerCase())
     );
     if (cardToAdd) {
       batch(() => {
-        setDeck(deck.filter((c) => c.id !== cardToAdd.id));
+        setDeck(deck.filter((c) => c !== cardToAdd));
         setHand([...hand, cardToAdd]);
       });
     }
@@ -337,45 +283,43 @@ export default function FullBoard({ player }: Props) {
         if (!payload)
           throw new Error("Payload missing when sending card to deck");
         if (payload.position === "top") {
-          setDeck([card, ...deck]);
+          setDeck([card.id, ...deck]);
         } else if (payload.position === "bottom") {
-          setDeck([...deck, card]);
+          setDeck([...deck, card.id]);
         }
         if (from === "battlefield") {
           fromStateSetter(
-            (fromState as CardFromLiveList[]).map((stack) =>
-              stack.filter((c) => c.id !== card.id)
+            (fromState as string[][]).map((stack) =>
+              stack.filter((c) => c !== card.id)
             )
           );
         } else if (from !== "tokens") {
-          fromStateSetter(
-            (fromState as CardFromLiveList).filter((c) => c.id !== card.id)
-          );
+          fromStateSetter((fromState as string[]).filter((c) => c !== card.id));
         }
         return;
       }
       if (from !== "tokens") {
         if (from !== "battlefield")
-          fromStateSetter(
-            (fromState as CardFromLiveList).filter((c) => c.id !== card.id)
-          );
+          fromStateSetter((fromState as string[]).filter((c) => c !== card.id));
         else {
           fromStateSetter(
-            (fromState as CardFromLiveList[]).map((stack) =>
-              stack.filter((c) => c.id !== card.id)
+            (fromState as string[][]).map((stack) =>
+              stack.filter((c) => c !== card.id)
             )
           );
         }
       }
       const id = generateRandomID();
+      if (allCards === undefined) throw new Error("allCards is undefined");
+      appendAllCards(datumToLiveCard({ ...card, id }));
       if (to === "battlefield") {
         updateMyPresence({ lastPlayedCard: id });
       } else {
         updateMyPresence({ lastPlayedCard: null });
       }
-      if (to !== "battlefield") toStateSetter([...toState, { ...card, id }]);
+      if (to !== "battlefield") toStateSetter([...toState, id]);
       else {
-        toStateSetter([...toState, [{ ...card, id }]]);
+        toStateSetter([...toState, [id]]);
       }
     });
   }
@@ -438,11 +382,14 @@ export default function FullBoard({ player }: Props) {
     exile.length > 0 ||
     hand.length > 0;
 
+  function idsToFullCard(ids: string[]) {
+    return ids.map((id) => allCards?.get(id)!).filter(Boolean);
+  }
+
   return (
     <>
       <span className="underline">room id:</span> {room}
-      {((isLoading &&
-        fetchStatus !== "idle") || isRefetching) &&
+      {((isLoading && fetchStatus !== "idle") || isRefetching) &&
         Loading({ message: "Loading game board..." })}
       {!(isLoading && fetchStatus !== "idle") && !gameStarted && (
         <div className="flex h-full">
@@ -480,11 +427,11 @@ export default function FullBoard({ player }: Props) {
           <h1 className="font-extrabold text-center text-2xl">Opponent</h1>
           <div className="flex flex-col" key={cardPositionKey}>
             <div className="border-b-2 border-slate-500">
-              <OpponentBoard ctrlKey={ctlrKey} player={otherPlayer} />
+              <OpponentBoard ctrlKey={ctlrKey} player={otherPlayer as any} />
             </div>
             <div id="player_board">
               <Controls
-                deck={deck}
+                deck={idsToFullCard(deck)}
                 draw={draw}
                 onShuffle={onShuffle}
                 onReset={onReset}
@@ -495,10 +442,10 @@ export default function FullBoard({ player }: Props) {
                 searchCard={searchCard}
               />
               <PlayerBoard
-                hand={hand}
-                battlefield={battlefield}
-                graveyard={graveyard}
-                exile={exile}
+                hand={idsToFullCard(hand)}
+                battlefield={battlefield.map((stack) => idsToFullCard(stack))}
+                graveyard={idsToFullCard(graveyard)}
+                exile={idsToFullCard(exile)}
                 engaged={engaged}
                 engageCard={engageCard}
                 addToken={addToken}
