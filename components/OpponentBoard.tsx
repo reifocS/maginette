@@ -1,19 +1,23 @@
-import { CardFromLiveList, Datum, Fields, OpponentCard } from "@/types";
+import { CardFromLiveList, Datum, Fields } from "@/types";
 import Cards from "./Cards";
 import Battlefield from "./Battlefield";
-import { GameData, LiveCard } from "@/liveblocks.config";
 
 type Props = {
-  player: Readonly<GameData> | null;
+  player: {
+    readonly deck: CardFromLiveList;
+    readonly related: CardFromLiveList;
+    readonly graveyard: CardFromLiveList;
+    readonly exile: CardFromLiveList;
+    readonly hand: CardFromLiveList;
+    readonly battlefield: readonly CardFromLiveList[];
+    readonly engaged: readonly string[];
+    readonly tokens: ReadonlyMap<string, [number, number]>;
+  } | null;
   ctrlKey: boolean;
 };
 
 export default function OpponentBoard({ player, ctrlKey }: Props) {
   const tokens = Object.fromEntries(player?.tokens?.entries() ?? []);
-
-  function idsToFullCard(ids: string[]): CardFromLiveList {
-    return ids.map((id) => player?.allCards?.get(id)!).filter(Boolean) as any;
-  }
   return (
     <div>
       <p className="text-xl font-extrabold">Hand</p>
@@ -21,7 +25,7 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         {player?.hand?.map((c) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            key={c}
+            key={c.id}
             alt="hidden card"
             className="w-[80px] h-[110px]"
             src="https://upload.wikimedia.org/wikipedia/en/thumb/a/aa/Magic_the_gathering-card_back.jpg/200px-Magic_the_gathering-card_back.jpg"
@@ -32,10 +36,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         <summary>Exile</summary>
         <Cards
           ctrlKey={ctrlKey}
-          cards={idsToFullCard(player?.exile ?? [])}
+          cards={player?.exile ?? []}
           show={true}
           field={"graveyard"}
-          engaged={[]}
+          engaged={player?.engaged ? [...player.engaged] : []}
           engageCard={function (cardId: string, e: boolean): void {
             throw new Error("Should never happen.");
           }}
@@ -62,10 +66,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         <summary>Graveyard</summary>
         <Cards
           ctrlKey={ctrlKey}
-          cards={idsToFullCard(player?.graveyard ?? [])}
+          cards={player?.graveyard ?? []}
           show={true}
           field={"graveyard"}
-          engaged={[]}
+          engaged={player?.engaged ? [...player.engaged] : []}
           engageCard={function (cardId: string, e: boolean): void {
             throw new Error("Should never happen.");
           }}
@@ -91,10 +95,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
       <p className="text-xl font-extrabold">Battlefield</p>
       <Battlefield
         ctrlKey={ctrlKey}
-        cards={player?.battlefield.map(stack => idsToFullCard(stack)) ?? []}
+        cards={player?.battlefield ?? []}
         show={true}
         field={"battlefield"}
-        engaged={player?.engaged ? [...player.engaged as any] : []}
+        engaged={player?.engaged ? [...player.engaged] : []}
         engageCard={function (cardId: string, e: boolean): void {
           throw new Error("Should never happen.");
         }}
