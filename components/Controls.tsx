@@ -104,9 +104,11 @@ export default function Controls({
         >
           {" "}
           <datalist id="cards">
-            {shuffle(deck as any).map((card: any) => (
-              <option key={card.id} value={card.name} />
-            ))}
+            {Array.from(new Set([...deck.map((c) => c.name).sort()])).map(
+              (card) => (
+                <option key={card} value={card} />
+              )
+            )}
           </datalist>
           <input
             type="search"
