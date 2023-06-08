@@ -107,6 +107,7 @@ export default function FullBoard({ player }: Props) {
   const engaged = currentPlayer?.engaged ?? [];
   const exile = currentPlayer?.exile ?? [];
   const related = currentPlayer?.related ?? [];
+  const swapped = currentPlayer?.swapped ?? [];
   const batch = useBatch();
   const [, updateMyPresence] = useMyPresence();
   const tokens = Array.from(currentPlayer?.tokens.entries() ?? []);
@@ -178,8 +179,6 @@ export default function FullBoard({ player }: Props) {
   function onDeckRelatedFetched(data: Datum[]) {
     if (data) {
       setRelated(data);
-      //Hack to clear history
-      // location.reload();
     }
   }
 
@@ -220,14 +219,20 @@ export default function FullBoard({ player }: Props) {
   const setExile = useMutation(({ storage }, exile: string[]) => {
     storage.get(currentPlayerId)?.set("exile", exile);
   }, []);
+
   const setTokens = useMutation(
     ({ storage }, tokens: [string, [number, number]][]) => {
       storage.get(currentPlayerId)?.set("tokens", new LiveMap(tokens));
     },
     []
   );
+
   const setRelated = useMutation(({ storage }, related: CardFromLiveList) => {
     storage.get(currentPlayerId)?.set("related", dataToLiveList(related));
+  }, []);
+
+  const setSwapped = useMutation(({ storage }, swapped: string[]) => {
+    storage.get(currentPlayerId)?.set("swapped", swapped);
   }, []);
 
   const [cardPositionKey, setCardPositionKey] = useState(1);
@@ -386,6 +391,7 @@ export default function FullBoard({ player }: Props) {
     return ids.map((id) => allCards?.get(id)!).filter(Boolean);
   }
 
+  console.log(swapped);
   return (
     <>
       <span className="underline">room id:</span> {room}
@@ -454,6 +460,8 @@ export default function FullBoard({ player }: Props) {
                 sendCardTo={sendCardTo}
                 cardSelection={selection}
                 setSelection={setSelection}
+                setSwapped={setSwapped}
+                swapped={swapped}
                 ctrlKey={ctlrKey}
               />
             </div>

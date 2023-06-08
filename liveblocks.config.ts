@@ -32,6 +32,7 @@ export type GameData = {
     tokens: LiveMap<string, [number, number]>;
     life: number;
     selected: string[];
+    swapped: string[];
 }
 type Storage = {
     playerOne: GameDataLive | null;
