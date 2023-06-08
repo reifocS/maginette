@@ -55,6 +55,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
             throw new Error("Should never happen.");
           }}
           tokensMap={tokens}
+          setSwapped={function (swapped: string[]): void {
+            throw new Error("Function not implemented.");
+          }}
+          swapped={[]}
         />
       </details>
 
@@ -85,16 +89,20 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
             throw new Error("Should never happen.");
           }}
           tokensMap={tokens}
+          setSwapped={function (swapped: string[]): void {
+            throw new Error("Function not implemented.");
+          }}
+          swapped={[]}
         />
       </details>
 
       <p className="text-xl font-extrabold">Battlefield</p>
       <Battlefield
         ctrlKey={ctrlKey}
-        cards={player?.battlefield.map(stack => idsToFullCard(stack)) ?? []}
+        cards={player?.battlefield.map((stack) => idsToFullCard(stack)) ?? []}
         show={true}
         field={"battlefield"}
-        engaged={player?.engaged ? [...player.engaged as any] : []}
+        engaged={player?.engaged ? [...(player.engaged as any)] : []}
         engageCard={function (cardId: string, e: boolean): void {
           throw new Error("Should never happen.");
         }}
@@ -118,6 +126,10 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
           throw new Error("Should never happen.");
         }}
         cardSelection={[]}
+        swapped={player?.swapped ? [...player.swapped] : []}
+        setSwapped={function (swapped: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
       />
     </div>
   );

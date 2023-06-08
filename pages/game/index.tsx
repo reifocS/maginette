@@ -15,17 +15,7 @@ const Game = () => {
     // useRouter is not accessible before hydration.
     return null;
   }
-  //type GameData = LiveObject<{
-  //   deck: LiveList<LiveCard>;
-  //   related: LiveList<LiveCard>;
-  //   graveyard: LiveList<LiveCard>;
-  //   exile: LiveList<LiveCard>;
-  //   hand: LiveList<LiveCard>;
-  //   battlefield: LiveList<LiveCard>;
-  //   engaged: LiveList<string>;
-  //   tokens: LiveMap<string, [number, number]>;
-  //   life: number;
-  // }>
+
   return (
     <RoomProvider
       id={room as string}
@@ -42,6 +32,7 @@ const Game = () => {
           related: new LiveList(),
           hand: [],
           selected: [],
+          swapped: []
         }),
         playerTwo: new LiveObject({
           allCards: new LiveMap(),
@@ -55,6 +46,7 @@ const Game = () => {
           related: new LiveList(),
           hand: [],
           selected: [],
+          swapped: []
         }),
       }}
       initialPresence={{ lastPlayedCard: null }}

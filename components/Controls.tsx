@@ -7,6 +7,7 @@ import {
   useRedo,
 } from "@/liveblocks.config";
 import { CardFromLiveList, Datum } from "@/types";
+import { shuffle } from "@/utils";
 
 type Props = {
   deck: CardFromLiveList;
@@ -103,7 +104,7 @@ export default function Controls({
         >
           {" "}
           <datalist id="cards">
-            {deck.map((card) => (
+            {shuffle(deck as any).map((card: any) => (
               <option key={card.id} value={card.name} />
             ))}
           </datalist>

@@ -17,6 +17,8 @@ export default function Hand({
   engageCard,
   addToken,
   tokensMap,
+  swapped,
+  setSwapped,
 }: PropsCards) {
   return (
     <div className="flex-wrap flex">
@@ -34,6 +36,8 @@ export default function Hand({
             tokensMap={tokensMap}
             overrideZindex={cards.length - i}
             ctrlKey={ctrlKey}
+            swapped={swapped}
+            setSwapped={setSwapped}
           />
         </div>
       ))}

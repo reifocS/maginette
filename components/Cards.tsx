@@ -14,6 +14,8 @@ export type PropsCards = {
     [k: string]: [number, number];
   };
   ctrlKey: boolean;
+  setSwapped: (swapped: string[]) => void;
+  swapped: readonly string[];
 };
 
 export default function Cards({
@@ -27,6 +29,8 @@ export default function Cards({
   addToken,
   tokensMap,
   ctrlKey,
+  setSwapped,
+  swapped,
 }: PropsCards) {
   return (
     <ul className="flex gap-3 flex-wrap min-h-[253px]">
@@ -45,6 +49,8 @@ export default function Cards({
             isOpponent={isOpponent}
             sendCardTo={sendCardTo}
             engaged={engaged}
+            setSwapped={setSwapped}
+            swapped={swapped}
             engageCard={engageCard}
             addToken={addToken}
             tokensMap={tokensMap}

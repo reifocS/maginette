@@ -21,9 +21,10 @@ type PropsCard = {
   ctrlKey: boolean;
   setSelection?: (cardId: string) => void;
   cardSelection?: string[];
+  swapped: readonly string[];
+  setSwapped: (swapped: string[]) => void;
 };
 
-const gridSize = 30;
 export default function Card({
   card,
   show = true,
@@ -38,11 +39,9 @@ export default function Card({
   overrideZindex,
   cardSelection = [],
   setSelection = () => {},
+  swapped = [],
+  setSwapped = () => {},
 }: PropsCard) {
-  const [swap, setSwap] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHover, setIsHover] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [contextMenuPosition, setContextMenuPosition] = useState<Point | null>(
@@ -57,15 +56,10 @@ export default function Card({
   const isEngaged = engaged.find((c) => c === card.id);
 
   const hasToken = tokensMap[card.id] !== undefined;
+  const swap = swapped.find((c) => c === card.id);
 
   const index = swap ? 1 : 0;
   const bind = useGesture({
-    onDragStart: () => {
-      setIsDragging(true);
-    },
-    onDragEnd: () => {
-      setIsDragging(false);
-    },
     onHover: () => {
       setIsHover(true);
     },
@@ -90,7 +84,6 @@ export default function Card({
       }
       if (field === "battlefield" && !isOpponent && shiftKey)
         engageCard(card.id, !isEngaged);
-      if (isOpponent) setSwap((prev) => !prev);
       if (field === "battlefield" && !isOpponent && ctrlKey) {
         sendCardTo(field, "graveyard", card as any);
       }
@@ -133,9 +126,7 @@ export default function Card({
     );
   }
 
-  const transformStyle = `translate3d(${position.x}px, ${
-    position.y
-  }px, 0) rotate(${isEngaged ? 90 : 0}deg)`;
+  const transformStyle = `rotate(${isEngaged ? 90 : 0}deg)`;
 
   const cardSize =
     field === "hand" && !isOpponent
@@ -172,7 +163,7 @@ export default function Card({
           transform: transformStyle,
           touchAction: "none",
           opacity: isFromSelection ? 0.5 : 1,
-          zIndex: isDragging ? 9999 : isEngaged ? 0 : overrideZindex ?? 1,
+          zIndex: isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
           boxShadow: isLastPlayed
             ? "0px 0px 10px rgba(255, 255, 255, 0.8), 0px 0px 10px rgba(255, 255, 255, 0.6), 0px 0px 10px rgba(255, 255, 255, 0.4)"
@@ -193,9 +184,16 @@ export default function Card({
             tokensMap[card.id][0]
           }/${tokensMap[card.id][1]}`}</div>
         )}
-        {isDoubleFaced && (
+        {isDoubleFaced && !isOpponent && (
           <svg
-            onClick={() => setSwap((prev) => !prev)}
+            onClick={() => {
+              console.log("swapping " + card.id);
+              if (swap) {
+                setSwapped(swapped.filter((c) => c !== card.id));
+              } else {
+                setSwapped([...swapped, card.id]);
+              }
+            }}
             aria-hidden="true"
             focusable="false"
             className="absolute top-0 left-0 h-[1.5em] text-red-500"
@@ -217,7 +215,13 @@ export default function Card({
             engageCard(card.id, !isEngaged);
           }}
           onSwapped={() => {
-            if (card.card_faces) setSwap((prev) => !prev);
+            if (isDoubleFaced) {
+              if (swap) {
+                setSwapped(swapped.filter((c) => c !== card.id));
+              } else {
+                setSwapped([...swapped, card.id]);
+              }
+            }
           }}
           x={contextMenuPosition.x}
           y={contextMenuPosition.y}

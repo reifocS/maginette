@@ -19,6 +19,8 @@ type PlayerBoardProps = {
   ctrlKey: boolean;
   cardSelection?: string[];
   setSelection: (id: string) => void;
+  setSwapped: (swapped: string[]) => void;
+  swapped: readonly string[];
 };
 
 export default function PlayerBoard({
@@ -35,6 +37,8 @@ export default function PlayerBoard({
   cardSelection = [],
   ctrlKey,
   setSelection,
+  setSwapped,
+  swapped,
 }: PlayerBoardProps) {
   return (
     <>
@@ -51,6 +55,8 @@ export default function PlayerBoard({
         tokensMap={tokensMap}
         setSelection={setSelection}
         ctrlKey={ctrlKey}
+        setSwapped={setSwapped}
+        swapped={swapped}
       />
       <p className="text-xl font-extrabold">Hand</p>
       <Hand
@@ -62,6 +68,8 @@ export default function PlayerBoard({
         engageCard={engageCard}
         addToken={addToken}
         tokensMap={tokensMap}
+        setSwapped={setSwapped}
+        swapped={swapped}
         ctrlKey={ctrlKey}
       />
       <details>
@@ -72,6 +80,8 @@ export default function PlayerBoard({
           show={true}
           field="graveyard"
           engaged={engaged}
+          setSwapped={setSwapped}
+          swapped={swapped}
           engageCard={engageCard}
           sendCardTo={sendCardTo}
           addToken={addToken}
@@ -91,6 +101,8 @@ export default function PlayerBoard({
           engageCard={engageCard}
           addToken={addToken}
           tokensMap={tokensMap}
+          setSwapped={setSwapped}
+          swapped={swapped}
           ctrlKey={ctrlKey}
         />
       </details>
@@ -106,6 +118,8 @@ export default function PlayerBoard({
           sendCardTo={sendCardTo}
           addToken={addToken}
           tokensMap={tokensMap}
+          setSwapped={setSwapped}
+          swapped={swapped}
           ctrlKey={ctrlKey}
         />
       </details>

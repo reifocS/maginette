@@ -2,26 +2,6 @@ import { CardFromLiveList } from "@/types";
 import { PropsCards } from "./Cards";
 import Card from "./Card";
 
-function groupLandCards(cards: CardFromLiveList): CardFromLiveList[] {
-  let groupedLand: CardFromLiveList[] = [];
-  let currentIndex = 0;
-  let others: CardFromLiveList[] = [];
-  for (const card of cards) {
-    if (card.produced_mana) {
-      if (groupedLand[currentIndex] && groupedLand[currentIndex].length > 2) {
-        currentIndex++;
-      }
-      if (!groupedLand[currentIndex]) {
-        groupedLand[currentIndex] = [];
-      }
-      groupedLand[currentIndex] = [...groupedLand[currentIndex], card];
-    } else {
-      others = [...others, [card]];
-    }
-  }
-  return groupedLand.concat(others);
-}
-
 export default function Battlefield({
   cards,
   ctrlKey,
@@ -35,6 +15,8 @@ export default function Battlefield({
   tokensMap,
   setSelection,
   cardSelection,
+  swapped,
+  setSwapped,
 }: Omit<PropsCards, "cards"> & {
   setSelection: (cardId: string) => void;
   cards: readonly CardFromLiveList[];
@@ -68,6 +50,8 @@ export default function Battlefield({
               cardSelection={cardSelection}
               addToken={addToken}
               tokensMap={tokensMap}
+              swapped={swapped}
+              setSwapped={setSwapped}
             />
           ))}
         </div>
