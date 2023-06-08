@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import useCards from "@/hooks/useCards";
 import { CardFromLiveList, Datum, Fields } from "@/types";
 import { generateRandomID, shuffle } from "@/utils";
-import { useQueryClient } from "@tanstack/react-query";
 import Loading from "@/components/Loading";
 import Controls from "./Controls";
 import PlayerBoard from "./PlayerBoard";

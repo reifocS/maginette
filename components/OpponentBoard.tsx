@@ -1,7 +1,7 @@
 import { CardFromLiveList, Datum, Fields, OpponentCard } from "@/types";
 import Cards from "./Cards";
 import Battlefield from "./Battlefield";
-import { GameData } from "@/liveblocks.config";
+import { GameData, LiveCard } from "@/liveblocks.config";
 
 type Props = {
   player: Readonly<GameData> | null;
