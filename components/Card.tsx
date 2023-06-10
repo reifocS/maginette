@@ -23,6 +23,7 @@ type PropsCard = {
   cardSelection?: string[];
   swapped: readonly string[];
   setSwapped: (swapped: string[]) => void;
+  giveCardToOpponent?: (cardId: string) => void;
 };
 
 export default function Card({
@@ -41,6 +42,7 @@ export default function Card({
   setSelection = () => {},
   swapped = [],
   setSwapped = () => {},
+  giveCardToOpponent = () => {},
 }: PropsCard) {
   const [isHover, setIsHover] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -230,6 +232,7 @@ export default function Card({
           card={card as Datum}
           addToken={addToken}
           currentTokenValue={tokensMap[card.id]}
+          giveCardToOpponent={giveCardToOpponent}
           addToSelection={() => {
             if (field === "battlefield" && !isOpponent) {
               setSelection(card.id);

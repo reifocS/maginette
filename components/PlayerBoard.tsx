@@ -21,6 +21,7 @@ type PlayerBoardProps = {
   setSelection: (id: string) => void;
   setSwapped: (swapped: string[]) => void;
   swapped: readonly string[];
+  giveCardToOpponent: (cardId: string) => void;
 };
 
 export default function PlayerBoard({
@@ -38,8 +39,10 @@ export default function PlayerBoard({
   ctrlKey,
   setSelection,
   setSwapped,
+  giveCardToOpponent,
   swapped,
 }: PlayerBoardProps) {
+  console.log({ battlefield });
   return (
     <>
       <p className="text-xl font-extrabold">Battlefield</p>
@@ -57,6 +60,7 @@ export default function PlayerBoard({
         ctrlKey={ctrlKey}
         setSwapped={setSwapped}
         swapped={swapped}
+        giveCardToOpponent={giveCardToOpponent}
       />
       <p className="text-xl font-extrabold">Hand</p>
       <Hand
@@ -71,6 +75,9 @@ export default function PlayerBoard({
         setSwapped={setSwapped}
         swapped={swapped}
         ctrlKey={ctrlKey}
+        giveCardToOpponent={function (cardId: string): void {
+          throw new Error("Function not implemented.");
+        }}
       />
       <details>
         <summary>Graveyard</summary>
@@ -87,6 +94,9 @@ export default function PlayerBoard({
           addToken={addToken}
           tokensMap={tokensMap}
           ctrlKey={ctrlKey}
+          giveCardToOpponent={function (cardId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </details>
 
@@ -104,6 +114,9 @@ export default function PlayerBoard({
           setSwapped={setSwapped}
           swapped={swapped}
           ctrlKey={ctrlKey}
+          giveCardToOpponent={function (cardId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </details>
       <details open>
@@ -121,6 +134,9 @@ export default function PlayerBoard({
           setSwapped={setSwapped}
           swapped={swapped}
           ctrlKey={ctrlKey}
+          giveCardToOpponent={function (cardId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </details>
     </>

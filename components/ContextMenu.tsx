@@ -35,7 +35,6 @@ function getShortcut(currentField: Fields, action: Action) {
         case "battlefield":
           return null;
       }
-
     case "graveyard":
       return null;
     case "exile":
@@ -90,6 +89,7 @@ type ContextMenuProps = {
   addToken: (cardId: string, [power, thougness]: [number, number]) => void;
   currentTokenValue?: [number, number];
   addToSelection?: () => void;
+  giveCardToOpponent?: (cardId: string) => void;
 };
 
 const CustomContextMenu = ({
@@ -104,6 +104,7 @@ const CustomContextMenu = ({
   addToken,
   currentTokenValue,
   addToSelection = () => {},
+  giveCardToOpponent = () => {},
 }: ContextMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -185,12 +186,20 @@ const CustomContextMenu = ({
           </div>
         </li>
         {field === "battlefield" && (
-          <li className={className} onClick={addToSelection}>
-            <div className="shortcut_container">
-              Add to stack <kbd>alt</kbd>
-              <kbd>shift</kbd>
-            </div>
-          </li>
+          <>
+            <li className={className} onClick={addToSelection}>
+              <div className="shortcut_container">
+                Add to stack <kbd>alt</kbd>
+                <kbd>shift</kbd>
+              </div>
+            </li>
+            <li
+              className={className}
+              onClick={() => giveCardToOpponent(card.id)}
+            >
+              <div className="shortcut_container">Give card to opponent</div>
+            </li>
+          </>
         )}
         <li className={className} onClick={onSwapped}>
           Swap face

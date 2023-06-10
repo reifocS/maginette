@@ -17,6 +17,7 @@ export default function Battlefield({
   cardSelection,
   swapped,
   setSwapped,
+  giveCardToOpponent
 }: Omit<PropsCards, "cards"> & {
   setSelection: (cardId: string) => void;
   cards: readonly CardFromLiveList[];
@@ -52,6 +53,7 @@ export default function Battlefield({
               tokensMap={tokensMap}
               swapped={swapped}
               setSwapped={setSwapped}
+              giveCardToOpponent={giveCardToOpponent}
             />
           ))}
         </div>

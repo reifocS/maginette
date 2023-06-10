@@ -14,6 +14,8 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
   function idsToFullCard(ids: string[]): CardFromLiveList {
     return ids.map((id) => player?.allCards?.get(id)!).filter(Boolean) as any;
   }
+
+  console.log({ player });
   return (
     <div>
       <p className="text-xl font-extrabold">Hand</p>
@@ -59,6 +61,9 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
             throw new Error("Function not implemented.");
           }}
           swapped={[]}
+          giveCardToOpponent={function (cardId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </details>
 
@@ -93,13 +98,20 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
             throw new Error("Function not implemented.");
           }}
           swapped={[]}
+          giveCardToOpponent={function (cardId: string): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </details>
 
       <p className="text-xl font-extrabold">Battlefield</p>
       <Battlefield
         ctrlKey={ctrlKey}
-        cards={player?.battlefield.map((stack) => idsToFullCard(stack)) ?? []}
+        cards={
+          player?.battlefield
+            .map((stack) => idsToFullCard(stack))
+            .filter((s) => s.length > 0) ?? []
+        }
         show={true}
         field={"battlefield"}
         engaged={player?.engaged ? [...(player.engaged as any)] : []}
@@ -128,6 +140,9 @@ export default function OpponentBoard({ player, ctrlKey }: Props) {
         cardSelection={[]}
         swapped={player?.swapped ? [...player.swapped] : []}
         setSwapped={function (swapped: string[]): void {
+          throw new Error("Function not implemented.");
+        }}
+        giveCardToOpponent={function (cardId: string): void {
           throw new Error("Function not implemented.");
         }}
       />
