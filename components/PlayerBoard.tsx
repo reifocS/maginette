@@ -42,7 +42,6 @@ export default function PlayerBoard({
   giveCardToOpponent,
   swapped,
 }: PlayerBoardProps) {
-  console.log({ battlefield });
   return (
     <>
       <p className="text-xl font-extrabold">Battlefield</p>
