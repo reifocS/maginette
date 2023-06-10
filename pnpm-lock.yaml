@@ -43,9 +43,6 @@ dependencies:
   react-hot-toast:
     specifier: ^2.4.0
     version: 2.4.0(csstype@3.1.2)(react-dom@18.2.0)(react@18.2.0)
-  react-resizable-panels:
-    specifier: ^0.0.39
-    version: 0.0.39(react-dom@18.2.0)(react@18.2.0)
   typescript:
     specifier: 5.0.3
     version: 5.0.3
@@ -2148,16 +2145,6 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
-    dev: false
-
-  /react-resizable-panels@0.0.39(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-qQDZtC9a+CxW8gPQ+E1aTK9j8dvKigRiBYcoWqZWkJlulsgPZda+GjWk4SXZHZzsCNJmyVjEVW2QaM850rNRUQ==}
-    peerDependencies:
-      react: ^16.14.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react@18.2.0:
