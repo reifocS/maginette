@@ -16,6 +16,7 @@ export type PropsCards = {
   ctrlKey: boolean;
   setSwapped: (swapped: string[]) => void;
   swapped: readonly string[];
+  giveCardToOpponent: (cardId: string) => void;
 };
 
 export default function Cards({

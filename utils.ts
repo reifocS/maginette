@@ -15,3 +15,35 @@ export function generateRandomID() {
     return Array.from(arr, byteToHex).join("");
 }
 
+export function processRawText(fromArena: string) {
+    if (fromArena.trim() === "") return [];
+    return new Set(
+      fromArena
+        .split("\n")
+        .map((s) => {
+          let withoutNumber = s.replace(/^[0-9]+/g, "").trim();
+          if (withoutNumber.includes("//")) {
+            //Double faced card
+            return withoutNumber.split("//")[0].trim();
+          }
+          return withoutNumber;
+        })
+        .filter((s) => s !== "")
+    );
+  }
+  
+  export function processCardWithTheirAmount(cards: string) {
+    const map = new Map<string, number>();
+    for (const card of cards.split("\n")) {
+      let [amount, ...cardName] = card.split(" ");
+      if (cardName.includes("//")) {
+        //Double faced card
+        cardName = cardName.slice(
+          0,
+          cardName.findIndex((c) => c === "//")
+        );
+      }
+      map.set(cardName.join(" ").toLowerCase().trim(), +amount);
+    }
+    return map;
+  }
