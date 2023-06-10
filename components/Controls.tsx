@@ -7,7 +7,6 @@ import {
   useRedo,
 } from "@/liveblocks.config";
 import { CardFromLiveList, Datum } from "@/types";
-import { shuffle } from "@/utils";
 
 type Props = {
   deck: CardFromLiveList;

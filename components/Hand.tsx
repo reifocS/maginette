@@ -1,10 +1,5 @@
-import { CardFromLiveList } from "@/types";
 import { PropsCards } from "./Cards";
 import Card from "./Card";
-
-function reverse<T>(array: readonly T[]) {
-  return array.map((item, idx) => array[array.length - 1 - idx]);
-}
 
 export default function Hand({
   cards,

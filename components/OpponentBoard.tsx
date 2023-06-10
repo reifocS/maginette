@@ -1,4 +1,4 @@
-import { CardFromLiveList, Datum, Fields, OpponentCard } from "@/types";
+import { CardFromLiveList, Datum, Fields } from "@/types";
 import Cards from "./Cards";
 import Battlefield from "./Battlefield";
 import { GameData } from "@/liveblocks.config";
