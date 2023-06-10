@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import useKeyPress from "@/hooks/useKeyPressed";
 import useMultiplayer from "@/hooks/useMultiplayer";
 import { processRawText, processCardWithTheirAmount } from "@/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DEFAULT_DECK = [
   "3 Ambitious Farmhand",
@@ -42,6 +43,7 @@ type Props = {
 export default function FullBoard({ player }: Props) {
   const [deckFromText, setDeckFromText] = useState("");
   const [, updateMyPresence] = useMyPresence();
+  const queryClient = useQueryClient();
   const { data, isLoading, fetchStatus, isRefetching } = useCards(
     Array.from(processRawText(deckFromText)),
     onDeckDataFetched
@@ -130,8 +132,10 @@ export default function FullBoard({ player }: Props) {
         d.push({ ...card, id: card.id + "-" + i });
       }
     }
-    setDeck(shuffle(d.map((c) => c.id)));
-    setAllCards(d.map((c) => [c.id, datumToLiveCard(c)]));
+    batch(() => {
+      setDeck(shuffle(d.map((c) => c.id)));
+      setAllCards(d.map((c) => [c.id, datumToLiveCard(c)]));
+    });
   }
 
   function onDeckRelatedFetched(data: Datum[]) {
@@ -285,6 +289,7 @@ export default function FullBoard({ player }: Props) {
             className="m-auto flex flex-col grow-0 items-center content-center"
             onSubmit={(e) => {
               e.preventDefault();
+              queryClient.invalidateQueries(["decks"]);
               const target = e.target as typeof e.target & {
                 cards: { value: string };
               };
