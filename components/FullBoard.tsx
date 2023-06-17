@@ -95,7 +95,8 @@ export default function FullBoard({ player }: Props) {
         })
       )
     ),
-    onDeckRelatedFetched
+    onDeckRelatedFetched,
+    true
   );
   const memoAmount = useMemo(
     () => processCardWithTheirAmount(deckFromText),
