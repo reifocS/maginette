@@ -1,6 +1,6 @@
 import { Datum, Fields, OpponentCard, Point } from "@/types";
 import { useGesture } from "@use-gesture/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import CustomContextMenu from "./ContextMenu";
 import { useMyPresence, useOthers } from "@/liveblocks.config";
 import { createPortal } from "react-dom";
@@ -25,6 +25,22 @@ type PropsCard = {
   setSwapped: (swapped: string[]) => void;
   giveCardToOpponent?: (cardId: string) => void;
 };
+
+function getPosition(element: HTMLElement | null) {
+  if (!element) return { x: 0, y: 0 };
+  let xPosition = 0;
+  let yPosition = 0;
+
+  while (element) {
+    xPosition += element.offsetLeft - element.scrollLeft + element.clientLeft;
+    yPosition += element.offsetTop - element.scrollTop + element.clientTop;
+    element = element.offsetParent as HTMLElement;
+  }
+  return {
+    x: xPosition,
+    y: yPosition,
+  };
+}
 
 export default function Card({
   card,
@@ -136,22 +152,32 @@ export default function Card({
       : "w-[150px] h-[214px]";
 
   const isFromSelection = cardSelection.find((id) => id === card.id);
+  const ww = Math.max(
+    document.documentElement.clientWidth,
+    window.innerWidth || 0
+  ); //width of the window
+  const isOnRightSide = useMemo(
+    () => getPosition(ref.current).x > ww / 2,
+    [ww, ref.current]
+  );
+
   return (
     <>
       {isHover &&
         ctrlKey &&
         createPortal(
           <div
-            className="fixed top-4 right-0 z-[9999]"
+            className={`fixed top-4 ${
+              isOnRightSide ? "left-0" : "right-0"
+            } z-[9999]`}
             style={{
               pointerEvents: "none",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              draggable={false}
               loading="eager"
-              className="h-[50%] rounded-3xl overflow-hidden"
+              className="h-[80vh] rounded-3xl overflow-hidden"
               src={src.image_uris?.normal}
               alt={src.name}
             ></img>
@@ -163,7 +189,6 @@ export default function Card({
         className="card rounded-lg overflow-hidden"
         style={{
           transform: transformStyle,
-          touchAction: "none",
           opacity: isFromSelection ? 0.5 : 1,
           zIndex: isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
@@ -175,7 +200,6 @@ export default function Card({
       >
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img
-          draggable={false}
           loading="eager"
           className={`${cardSize}`}
           src={src.image_uris?.normal}
@@ -189,7 +213,6 @@ export default function Card({
         {isDoubleFaced && !isOpponent && (
           <svg
             onClick={() => {
-              console.log("swapping " + card.id);
               if (swap) {
                 setSwapped(swapped.filter((c) => c !== card.id));
               } else {

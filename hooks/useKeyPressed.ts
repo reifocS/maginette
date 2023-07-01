@@ -8,7 +8,6 @@ export default function useKeyPress(targetKey: string): boolean {
     // Add event listeners
     useEffect(() => {
         function downHandler({ key }: KeyboardEvent): void {
-            console.log(key)
             if (key === targetKey) {
                 setKeyPressed(true);
             }
