@@ -68,7 +68,15 @@ export default function Card({
     others.find((o) => o.presence.lastPlayedCard)
   );
   const otherPlayedCard = other?.presence.lastPlayedCard;
-
+  const isFromSelection = cardSelection.find((id) => id === card.id);
+  const ww = Math.max(
+    document.documentElement.clientWidth,
+    window.innerWidth || 0
+  ); //width of the window
+  const isOnRightSide = useMemo(
+    () => getPosition(ref.current).x > ww / 2,
+    [ww, ref.current]
+  );
   const isEngaged = engaged.find((c) => c === card.id);
 
   const hasToken = tokensMap[card.id] !== undefined;
@@ -81,11 +89,6 @@ export default function Card({
     },
     onMouseLeave: () => {
       setIsHover(false);
-    },
-    onDrag: ({ offset: [x, y], xy }) => {
-      // const newX = Math.round(x / gridSize) * gridSize;
-      // const newY = Math.round(y / gridSize) * gridSize;
-      // setPosition({ x: newX, y: newY });
     },
     onContextMenu: ({ event }) => {
       if (!show || isOpponent) return;
@@ -148,16 +151,6 @@ export default function Card({
     field === "hand" && !isOpponent
       ? "w-[180px] h-[257px]"
       : "w-[150px] h-[214px]";
-
-  const isFromSelection = cardSelection.find((id) => id === card.id);
-  const ww = Math.max(
-    document.documentElement.clientWidth,
-    window.innerWidth || 0
-  ); //width of the window
-  const isOnRightSide = useMemo(
-    () => getPosition(ref.current).x > ww / 2,
-    [ww, ref.current]
-  );
 
   return (
     <>
