@@ -142,16 +142,15 @@ export default function Card({
         ctrlKey &&
         createPortal(
           <div
-            className="fixed top-4 right-0 z-[9999]"
+            className={`fixed top-4 ${"right-0"} z-[9999]`}
             style={{
               pointerEvents: "none",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              draggable={false}
               loading="eager"
-              className="h-[50%] rounded-3xl overflow-hidden"
+              className="h-[80vh] rounded-3xl overflow-hidden"
               src={src.image_uris?.normal}
               alt={src.name}
             ></img>
@@ -163,7 +162,6 @@ export default function Card({
         className="card rounded-lg overflow-hidden"
         style={{
           transform: transformStyle,
-          touchAction: "none",
           opacity: isFromSelection ? 0.5 : 1,
           zIndex: isEngaged ? 0 : overrideZindex ?? 1,
           position: "relative",
@@ -175,7 +173,6 @@ export default function Card({
       >
         {/* eslint-disable-next-line @next/next/no-img-element*/}
         <img
-          draggable={false}
           loading="eager"
           className={`${cardSize}`}
           src={src.image_uris?.normal}
@@ -189,7 +186,6 @@ export default function Card({
         {isDoubleFaced && !isOpponent && (
           <svg
             onClick={() => {
-              console.log("swapping " + card.id);
               if (swap) {
                 setSwapped(swapped.filter((c) => c !== card.id));
               } else {
